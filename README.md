@@ -1,10 +1,8 @@
-# Proyecto de Autenticación
-
-Este proyecto es una API de autenticación utilizando Node.js y MongoDB.
+# Pixia
 
 ## Requisitos
 
-- Node.js (v14 o superior)
+- Node.js
 - MongoDB
 
 ## Instalación
