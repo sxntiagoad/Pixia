@@ -24,15 +24,6 @@ Sigue estos pasos para clonar el repositorio y configurar el proyecto:
     npm install
     ```
 
-3. Configura las variables de entorno:
-
-    Crea un archivo `.env` en la raíz del proyecto y añade las siguientes variables:
-
-    ```env
-    MONGODB_URI=mongodb://localhost:27017/tu-base-de-datos
-    PORT=3000
-    ```
-
 4. Inicia MongoDB:
 
     Asegúrate de que MongoDB esté corriendo. Puedes iniciar MongoDB con el siguiente comando:
@@ -45,49 +36,5 @@ Sigue estos pasos para clonar el repositorio y configurar el proyecto:
 
     ```sh
     npm start
+    npm run dev
     ```
-
-## Endpoints
-
-### Registro
-
-- **URL:** `/register`
-- **Método:** `POST`
-- **Descripción:** Registra un nuevo usuario.
-- **Cuerpo de la solicitud:**
-
-    ```json
-    {
-        "username": "tu-usuario",
-        "email": "tu-email@example.com",
-        "password": "tu-contraseña"
-    }
-    ```
-
-### Login
-
-- **URL:** `/login`
-- **Método:** `POST`
-- **Descripción:** Inicia sesión con un usuario existente.
-- **Cuerpo de la solicitud:**
-
-    ```json
-    {
-        "email": "tu-email@example.com",
-        "password": "tu-contraseña"
-    }
-    ```
-
-## Contribuir
-
-Si deseas contribuir a este proyecto, por favor sigue estos pasos:
-
-1. Haz un fork del repositorio.
-2. Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
-3. Realiza tus cambios y haz commit (`git commit -am 'Añadir nueva funcionalidad'`).
-4. Sube tus cambios a tu fork (`git push origin feature/nueva-funcionalidad`).
-5. Crea un Pull Request.
-
-## Licencia
-
-Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
