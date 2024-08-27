@@ -29,4 +29,32 @@ export const register = async (req, res) => {
     }
 };
 
-export const login = (req, res) => res.send("login");
+export const login =async (req, res) => {
+    const { email, password } = req.body;
+    try {
+
+        const userFound = await User.findOne({ email });
+        if (!userFound) return res.status(400).json({ message: "User not found" }); 
+        const passwordHash = await bcrypt.hash(password, 10);
+        const newUser = new User({
+            username,
+            email,
+            password: passwordHash,
+        });
+
+        const userSaved = await newUser.save();
+        const token = await createAccesToken({ id: userSaved._id });
+
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        res.json({
+            id: userSaved._id,
+            username: userSaved.username,
+            email: userSaved.email,
+            createdAt: userSaved.createdAt,
+            updatedAt: userSaved.updatedAt,
+        });
+
+    } catch (error) {
+        res.status(500).send({ message: "error.message" });
+    }
+};
