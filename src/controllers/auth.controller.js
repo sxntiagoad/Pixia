@@ -70,4 +70,4 @@ export const profile = async (req, res) => {
     createdAt: userFound.createdAt,
     updatedAt: userFound.updatedAt,
   });
-}; //return message
+};
