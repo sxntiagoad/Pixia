@@ -25,8 +25,7 @@ export const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.log(error);
-        res.status(500).send({ message: "Error registering user" });
+        res.status(500).send({ message: "error.message" });
     }
 };
 
