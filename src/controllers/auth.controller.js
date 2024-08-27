@@ -59,4 +59,15 @@ export const logout = async (req, res) => {
     res.clearCookie("token", "", {expires: new Date(0) }); //clear cookie
     return res.sendStatus(200); //return message
 }   
-  
+
+export const profile = async (req, res) => {
+  const userFound= await User.findById(req.user.id);
+  if(!userFound) return res.status(400).json({message:"User not found"}); //return error if user not found
+  return res.json({ //return user data to client
+    id: userFound._id, 
+    username: userFound.username,
+    email: userFound.email,
+    createdAt: userFound.createdAt,
+    updatedAt: userFound.updatedAt,
+  });
+}; //return message
