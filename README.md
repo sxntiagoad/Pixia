@@ -24,7 +24,7 @@ Sigue estos pasos para clonar el repositorio y configurar el proyecto:
 
 4. Inicia MongoDB:
 
-    Asegúrate de que MongoDB esté corriendo. Puedes iniciar MongoDB con el siguiente comando:
+    Asegúrate de que MongoDB esté corriendo con el siguiente comando:
 
     ```sh
     mongod
