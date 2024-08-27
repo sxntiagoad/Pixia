@@ -12,7 +12,7 @@ export const register = async (req, res) => {
         });
 
         const userSaved=await newUser.save(); //save user to database
-        
+         
         res.json({id:userSaved._id,
             username:userSaved.username,
             email:userSaved.email, 
