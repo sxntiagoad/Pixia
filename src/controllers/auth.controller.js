@@ -1,29 +1,33 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-export const register = async (req, res) => {
-    const { username, email, password } = req.body; //get user data from request
-    try { //try to register new user
+import { createAccesToken } from "../libs/jwt.js";
 
-        const passwordHash = await bcrypt.hash(password, 10); //encrypt password
-        const newUser = new User({ //create new user
+export const register = async (req, res) => {
+    const { username, email, password } = req.body;
+    try {
+        const passwordHash = await bcrypt.hash(password, 10);
+        const newUser = new User({
             username,
             email,
             password: passwordHash,
         });
 
-        const userSaved=await newUser.save(); //save user to database
-         
-        res.json({id:userSaved._id,
-            username:userSaved.username,
-            email:userSaved.email, 
-            createdAt:userSaved.createdAt,
-            updatedAt:userSaved.updatedAt,
-        }); //return user data without password to client
+        const userSaved = await newUser.save();
+        const token = await createAccesToken({ id: userSaved._id });
 
-    } catch (error) { //catch any errors
+        res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        res.json({
+            id: userSaved._id,
+            username: userSaved.username,
+            email: userSaved.email,
+            createdAt: userSaved.createdAt,
+            updatedAt: userSaved.updatedAt,
+        });
+
+    } catch (error) {
         console.log(error);
-        res.status(500).send({ message: "Error registering user" }); //return error message
+        res.status(500).send({ message: "Error registering user" });
     }
-}; //register new user
+};
 
-export const login = (req, res) => res.send("login"); 
+export const login = (req, res) => res.send("login");
