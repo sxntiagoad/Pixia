@@ -1,7 +1,15 @@
-import React from 'react'
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ImageGeneratorPage from './pages/ImageGeneratorPage';
 
-export default function App() {
+const App = () => {
   return (
-    <div><h1 className="text-4xl font bold">Hola mundo</h1></div>
-  )
-}
+    <Router>
+      <Routes>
+        <Route path="/" element={<ImageGeneratorPage />} />
+      </Routes>
+    </Router>
+  );
+};
+
+export default App;

@@ -1,8 +1,33 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-body {
-    background: #202020;
-    color: white;   
-}
+/* src/index.css */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  input {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    margin-right: 1rem;
+    width: 100%; /* Asegura que el input ocupe todo el ancho disponible */
+    box-sizing: border-box; /* Incluye el padding y el borde en el ancho total */
+  }
+  
+  button {
+    padding: 0.5rem 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 100%; /* Hace que el botón ocupe todo el ancho disponible */
+    margin-top: 0.5rem; /* Añade un pequeño espacio entre el input y el botón */
+  }
+  
+  .image-gallery {
+    margin-top: 2rem;
+  }
+  
+  .image-gallery img {
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
