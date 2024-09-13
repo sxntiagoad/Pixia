@@ -1,7 +1,23 @@
-import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import RegisterPage from './pages/RegisterPage';
+import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
+import { AuthProvider } from './context/AuthContext';
 
-export default function App() {
+function App() {
+  console.log("App component is rendering");
   return (
-    <div><h1 className="text-4xl font bold">Hola mundo</h1></div>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={ <h1>Home Page</h1> } />
+          <Route path="/login" element={ <LoginPage/> } />
+          <Route path="/register" element={ <RegisterPage/> } />
+          <Route path='/mainpage' element={ <MainPage/> }/>
+        </Routes>  
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
+
+export default App;
