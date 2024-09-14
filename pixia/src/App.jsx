@@ -11,10 +11,11 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={ <LoginPage/> } />
           <Route path="/login" element={ <LoginPage/> } />
           <Route path="/register" element={ <RegisterPage/> } />
           <Route path='/mainpage' element={ <MainPage/> }/>
-          <Route path="/" element={<ImageGeneratorPage />} />
+          <Route path="/imagegenerator" element={<ImageGeneratorPage />} />
         </Routes>  
       </BrowserRouter>
     </AuthProvider>
