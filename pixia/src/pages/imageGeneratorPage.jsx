@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { generateImageApi, fetchImagesApi } from '../api/imageApi';
-import ImageForm from '../components/imageForm';
-import ImagePreview from '../components/imagePreview';
-import ImageList from '../components/imageList';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import ImageForm from '../components/ImageForm';
+import ImagePreview from '../components/ImagePreview';
+import ImageList from '../components/ImageList';
+import { generateImageApi, fetchImagesApi } from '../api/imageApi'; // Asegúrate de tener estas funciones en tu API
 
 const ImageGeneratorPage = () => {
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
+
   const [prompt, setPrompt] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const generateImage = async () => {
     if (!prompt.trim()) {
@@ -49,26 +59,35 @@ const ImageGeneratorPage = () => {
     fetchImages();
   }, []);
 
-  const handlePromptChange = (e) => {
-    setPrompt(e.target.value);
-    setError('');
-  };
-
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Generador de Imágenes</h1>
-      
-      <ImageForm
-        prompt={prompt}
-        onPromptChange={handlePromptChange}
-        onGenerateImage={generateImage}
-        isLoading={isLoading}
-        error={error}
-      />
+    <div className="min-h-screen flex flex-col">
+      {/* Barra de navegación */}
+      <nav className="bg-zinc-800 p-4 flex justify-between items-center">
+        <h1 className="text-white text-lg">Pixia</h1>
+        <div className="flex items-center gap-4">
+          <span className="text-white">Bienvenido, {user?.username}</span>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-md"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
+      </nav>
 
-      <ImagePreview imageUrl={imageUrl} />
-
-      <ImageList images={images} isLoading={isLoading} />
+      {/* Contenido principal */}
+      <div className="flex-grow p-8">
+        <h2 className="text-2xl font-bold mb-4">Generador de Imágenes</h2>
+        <ImageForm
+          prompt={prompt}
+          onPromptChange={(e) => setPrompt(e.target.value)}
+          onGenerateImage={generateImage}
+          isLoading={isLoading}
+          error={error}
+        />
+        <ImagePreview imageUrl={imageUrl} />
+        <ImageList images={images} isLoading={isLoading} />
+      </div>
     </div>
   );
 };
