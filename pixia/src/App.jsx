@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
-import MainPage from './pages/MainPage';
+import LandingPage from './pages/landingPage';
 import { AuthProvider } from './context/AuthContext';
-import ImageGeneratorPage from './pages/imageGeneratorPage';
+import ImageGeneratorPage from './pages/ImageGeneratorPage';
 
 function App() {
   console.log("App component is rendering");
@@ -13,8 +13,8 @@ function App() {
         <Routes>
           <Route path="/login" element={ <LoginPage/> } />
           <Route path="/register" element={ <RegisterPage/> } />
-          <Route path='/mainpage' element={ <MainPage/> }/>
-          <Route path="/" element={<ImageGeneratorPage />} />
+          <Route path='/' element={ <LandingPage/> }/>
+          <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
         </Routes>  
       </BrowserRouter>
     </AuthProvider>
