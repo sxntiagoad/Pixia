@@ -10,7 +10,7 @@ function RegisterPage() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate('/mainpage');
+            navigate('/ImageGeneratorPage');
         }
     }, [isAuthenticated]);
 

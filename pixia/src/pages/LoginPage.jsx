@@ -11,7 +11,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/mainpage');
+      navigate('/ImageGeneratorPage');
     }
   }, [isAuthenticated]);
 

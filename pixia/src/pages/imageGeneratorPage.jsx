@@ -3,6 +3,8 @@ import { generateImageApi, fetchImagesApi } from '../api/imageApi';
 import ImageForm from '../components/imageForm';
 import ImagePreview from '../components/imagePreview';
 import ImageList from '../components/imageList';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const ImageGeneratorPage = () => {
   const [prompt, setPrompt] = useState('');
@@ -10,6 +12,8 @@ const ImageGeneratorPage = () => {
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const generateImage = async () => {
     if (!prompt.trim()) {
@@ -54,9 +58,22 @@ const ImageGeneratorPage = () => {
     setError('');
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Generador de Imágenes</h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Generador de Imágenes</h1>
+        <button 
+          onClick={handleLogout}
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Cerrar sesión
+        </button>
+      </div>
       
       <ImageForm
         prompt={prompt}
