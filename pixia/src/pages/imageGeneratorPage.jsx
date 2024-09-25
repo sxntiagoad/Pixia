@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { generateImageApi, fetchImagesApi, processImageApi } from '../api/imageApi';
-import ImageForm from '../components/imageForm';
+import ImageForm from '../components/ImageForm';
 import ImagePreview from '../components/imagePreview';
 import ImageList from '../components/imageList';
 import { useAuth } from '../context/AuthContext';
