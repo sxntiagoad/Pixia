@@ -9,6 +9,10 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  imageProcessedUrl: {
+    type: String,
+    required: false,
+  },
 }, {
   timestamps: true
 });

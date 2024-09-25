@@ -6,13 +6,15 @@ import authRoutes from './routes/auth.routes.js';
 import tasksRoutes from './routes/tasks.routes.js';
 import imageRoutes from './routes/image.routes.js';
 
+
 const app = express(); //create express app
 
 app.use(cors({
     origin: 'http://localhost:5173',
 })); //enable cors
 app.use(morgan('dev')); //log requests to console
-app.use(express.json()); //parse json bodies 
+app.use(express.json({ limit: '50mb' })); //parse json bodies with increased limit
+app.use(express.urlencoded({ limit: '50mb', extended: true })); //parse url encoded bodies with increased limit
 app.use(cookieParser()); //parse cookies
 
 // Rutas
@@ -38,6 +40,15 @@ app.use((err, req, res, next) => {
         mensaje: 'Error interno del servidor',
         error: err.message
     });
+});
+
+// Aumenta el tiempo de espera a 2 minutos (120000 ms)
+app.use((req, res, next) => {
+    res.setTimeout(120000, () => {
+        console.log('Request has timed out.');
+        res.send(408);
+    });
+    next();
 });
 
 export default app; //export app
