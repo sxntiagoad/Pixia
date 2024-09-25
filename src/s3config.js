@@ -11,7 +11,6 @@ const s3Client = new S3Client({
 });
 
 const uploadToS3 = async (buffer, fileName, contentType) => {
-  
   if (!AWS_BUCKET_NAME) {
     throw new Error('AWS_BUCKET_NAME is not defined');
   }
