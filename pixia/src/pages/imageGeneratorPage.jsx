@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { generateImageApi, fetchImagesApi, processImageApi } from '../api/imageApi';
-import ImageForm from '../components/ImageForm';
-import ImagePreview from '../components/imagePreview';
-import ImageList from '../components/imageList';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import ImageForm from '../components/ImageForm';
+import ImagePreview from '../components/ImagePreview';
+import ImageList from '../components/ImageList';
+import { generateImageApi, fetchImagesApi, processImageApi } from '../api/imageApi';
+import axios from 'axios';
 
 const ImageGeneratorPage = () => {
+  const { logout, user, setUser } = useAuth();
+  const navigate = useNavigate();
+
   const [prompt, setPrompt] = useState('');
   const [overlayText, setOverlayText] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -14,8 +18,7 @@ const ImageGeneratorPage = () => {
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const generateImage = async () => {
     if (!prompt.trim()) {
@@ -49,7 +52,7 @@ const ImageGeneratorPage = () => {
       const response = await processImageApi(imageUrl, overlayText, prompt);
       if (response.data && response.data.processedImageUrl) {
         setProcessedImageUrl(response.data.processedImageUrl);
-        fetchImages(); // Actualiza la lista de imágenes después de procesar
+        fetchImages();
       } else {
         throw new Error('La respuesta no contiene una URL de imagen procesada válida');
       }
@@ -72,8 +75,21 @@ const ImageGeneratorPage = () => {
     }
   };
 
+  const fetchUserProfile = async () => {
+    try {
+      const res = await axios.get('/api/profile', { withCredentials: true });
+      setUser(res.data);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Error al obtener el perfil del usuario:', error.response || error);
+      setUser(null);
+      setIsAuthenticated(false);
+    }
+  };
+
   useEffect(() => {
     fetchImages();
+    fetchUserProfile();
   }, []);
 
   const handlePromptChange = (e) => {

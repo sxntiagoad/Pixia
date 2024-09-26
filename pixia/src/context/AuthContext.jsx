@@ -1,61 +1,84 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { registerRequest, loginRequest } from '../api/auth'; // Asegúrate de tener loginRequest
-import { set } from 'mongoose';
-import Cookies from 'js-cookie';
+import { registerRequest, loginRequest } from '../api/auth';
+import axios from 'axios';
+import Cookie from 'js-cookie';
 
-export const AuthContext = createContext();  // Se crea el contexto
+export const AuthContext = createContext();
+
 export const useAuth = () => {
-    const context = useContext(AuthContext); // Obtener el contexto
+    const context = useContext(AuthContext);
     if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
+        throw new Error('useAuth debe ser usado dentro de un AuthProvider');
     }
     return context;
-}; // Se crea el hook para usar el contexto
+};
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [errors, setErrors] = useState([]);   
 
     const signup = async (user) => {
         try {
-            const res = await registerRequest(user)
-            console.log(res.data)
-            setUser(res.data)
-            setIsAuthenticated(true)
+            const res = await registerRequest(user);
+            setUser(res.data);
+            setIsAuthenticated(true);
         } catch (error) {
-            setErrors(error.response.data)
+            setErrors(error.response.data);
         }
     }
 
     const signin = async (user) => {
         try {
-            const res = await loginRequest(user)
-            console.log(res.data)
-            setUser(res.data)
-            setIsAuthenticated(true)
+            const res = await loginRequest(user);
+            setUser(res.data);
+            setIsAuthenticated(true);
         } catch (error) {
-            if(Array.isArray(error.response.data)) {
-                return setErrors(error.response.data)
+            if(Array.isArray(error.response.data)){
+                return setErrors(error.response.data);
             }
-            setErrors([error.response.data.message])
+            setErrors([error.response.data.message]);
         }
     }
 
-    const logout = () => {
-        setUser(null);
-        setIsAuthenticated(false);
-        Cookies.remove('token');
+    const logout = async () => {
+        try {
+            await axios.post('/api/logout', {}, { withCredentials: true });
+            setUser(null);
+            setIsAuthenticated(false);
+            Cookie.remove('token');
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+        }
     }
+
+    const fetchUserProfile = async () => {
+        try {
+            const res = await axios.get('/api/profile', { withCredentials: true });
+            setUser(res.data);
+            setIsAuthenticated(true);
+        } catch (error) {
+            setUser(null);
+            setIsAuthenticated(false);
+        }
+    }
+
+    useEffect(() => {
+        const token = Cookie.get('token');
+        if (token) {
+            fetchUserProfile();
+        }
+    }, []);
 
     useEffect(() => {
         if(errors.length > 0) {
             const timer = setTimeout(() => {
-                setErrors([])
-            }, 4500)
-            return () => clearTimeout(timer)
+                setErrors([]);
+            }, 4500);
+            return () => clearTimeout(timer);
         }
-    }, [errors])
+    }, [errors]);
+
     return (
         <AuthContext.Provider value={{
             signup,
