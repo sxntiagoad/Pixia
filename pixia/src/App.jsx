@@ -4,7 +4,7 @@ import LoginPage from './pages/LoginPage';
 import LandingPage from './pages/landingPage';
 import { AuthProvider } from './context/AuthContext';
 import ImageGeneratorPage from './pages/ImageGeneratorPage';
-import BuildVacancyPage from './pages/BuildVacancyPage';
+// import BuildVacancyPage from './pages/BuildVacancyPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
           <Route path='/' element={ <LandingPage/> }/>
           <Route element={<ProtectedRoute />}>
             <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
-            <Route path="/BuildVacancyPage" element={<BuildVacancyPage />} />
+            {/* <Route path="/BuildVacancyPage" element={<BuildVacancyPage />} /> */}
           </Route>
         </Routes>  
       </BrowserRouter>

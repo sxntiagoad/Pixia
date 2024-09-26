@@ -30,7 +30,7 @@ function LandingPage() {
           </div>
         </div>
 
-        <Link to="/BuildVacancyPage" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full text-xl transition duration-300">
+        <Link to="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full text-xl transition duration-300">
           Comenzar a Crear
         </Link>
       </main>

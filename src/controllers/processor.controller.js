@@ -11,7 +11,7 @@ export const processImage = async (req, res) => {
     console.log('Descargando imagen:', imageUrl);
     const response = await axios.get(imageUrl, {
       responseType: 'arraybuffer',
-      timeout: 10000,
+      timeout: 20000,
     });
 
     console.log('Imagen descargada exitosamente');
@@ -47,7 +47,7 @@ export const processImage = async (req, res) => {
       overlayText,
     });
     await newImage.save();
-
+    console.log("url procesada", processedImageUrl)
     console.log('Imagen procesada y guardada exitosamente');
     res.json({ processedImageUrl, imageId: newImage._id });
   } catch (error) {
