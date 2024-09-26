@@ -1,30 +1,14 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import backgroundImage from '../assets/fondoPixia.jpg';
+import Navbar from '../components/Navbar';
 
 function LandingPage() {
   return (
     <div className="bg-gray-900 min-h-screen flex flex-col bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }}>
       {/* Barra superior */}
-      <nav className="bg-gray-800 bg-opacity-80 p-4 flex justify-between items-center">
-        <div className="flex space-x-6">
-          <Link to="/crear-vacante" className="text-gray-300 hover:text-white transition duration-300">Crear Vacante</Link>
-          <Link to="/vacantes" className="text-gray-300 hover:text-white transition duration-300">Vacantes</Link>
-          <Link to="/ajustes" className="text-gray-300 hover:text-white transition duration-300">Ajustes</Link>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Link to="/login" className="bg-blue-650 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
-            Iniciar Sesión
-          </Link>
-          <Link to="/register" className="bg-green-650 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300">
-            Registrarse
-          </Link>
-          <div className="w-10 h-10 bg-gray-700 rounded-full overflow-hidden">
-            {/* Comentado temporalmente para evitar errores si userAvatar no está definido */}
-            {/* <img src={userAvatar} alt="Usuario" className="w-full h-full object-cover" /> */}
-          </div>
-        </div>
-      </nav>
+      <Navbar />
+      
 
       {/* Contenido principal */}
       <main className="flex-grow flex flex-col items-center justify-center px-4 text-center bg-black bg-opacity-50">
@@ -46,7 +30,7 @@ function LandingPage() {
           </div>
         </div>
 
-        <Link to="/ImageGeneratorPage" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full text-xl transition duration-300">
+        <Link to="/BuildVacancyPage" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full text-xl transition duration-300">
           Comenzar a Crear
         </Link>
       </main>

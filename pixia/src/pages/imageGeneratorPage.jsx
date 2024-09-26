@@ -6,6 +6,7 @@ import ImagePreview from '../components/ImagePreview';
 import ImageList from '../components/ImageList';
 import { generateImageApi, fetchImagesApi, processImageApi } from '../api/imageApi';
 import axios from 'axios';
+import Navbar from '../components/Navbar';
 
 const ImageGeneratorPage = () => {
   const { logout, user, setUser } = useAuth();
@@ -102,37 +103,25 @@ const ImageGeneratorPage = () => {
     setError('');
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Generador de Imágenes</h1>
-        <button 
-          onClick={handleLogout}
-          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Cerrar sesión
-        </button>
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <div className="container mx-auto p-6 flex-grow">
+        <ImageForm
+          prompt={prompt}
+          onPromptChange={handlePromptChange}
+          overlayText={overlayText}
+          onOverlayTextChange={handleOverlayTextChange}
+          onGenerateImage={generateImage}
+          onProcessImage={processImage}
+          isLoading={isLoading}
+          error={error}
+        />
+
+        <ImagePreview imageUrl={processedImageUrl || imageUrl} />
+
+        <ImageList images={images} isLoading={isLoading} />
       </div>
-      
-      <ImageForm
-        prompt={prompt}
-        onPromptChange={handlePromptChange}
-        overlayText={overlayText}
-        onOverlayTextChange={handleOverlayTextChange}
-        onGenerateImage={generateImage}
-        onProcessImage={processImage}
-        isLoading={isLoading}
-        error={error}
-      />
-
-      <ImagePreview imageUrl={processedImageUrl || imageUrl} />
-
-      <ImageList images={images} isLoading={isLoading} />
     </div>
   );
 };
