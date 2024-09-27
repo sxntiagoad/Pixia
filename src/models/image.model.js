@@ -9,7 +9,11 @@ const imageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  imageProcessedUrl: {
+  processedImageUrl: {
+    type: String,
+    required: false,
+  },
+  overlayText: {
     type: String,
     required: false,
   },

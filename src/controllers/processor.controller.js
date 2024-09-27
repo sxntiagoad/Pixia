@@ -48,13 +48,15 @@ export const processImage = async (req, res) => {
     // Dibujar la imagen principal
     ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 
-    // Crear gradiente para difuminar el fondo negro con la imagen
-    const gradient = ctx.createLinearGradient(0, 0, drawX + drawWidth * 0.3, 0);
+    // Crear gradiente para difuminar el borde izquierdo de la imagen con el fondo negro
+    const gradientWidth = drawWidth * 0.2; // Ancho del gradiente (20% del ancho de la imagen)
+    const gradient = ctx.createLinearGradient(drawX, 0, drawX + gradientWidth, 0);
     gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
-    gradient.addColorStop(0.7, 'rgba(0, 0, 0, 0.7)');
     gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+    // Aplicar el gradiente
     ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, drawX + drawWidth * 0.3, canvasHeight);
+    ctx.fillRect(drawX, drawY, gradientWidth, drawHeight);
 
     if (overlayText) {
       console.log('Añadiendo texto a la imagen');
