@@ -3,8 +3,8 @@ import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import LandingPage from './pages/landingPage';
 import { AuthProvider } from './context/AuthContext';
-import ImageGeneratorPage from './pages/ImageGeneratorPage';
-// import BuildVacancyPage from './pages/BuildVacancyPage';
+import ImageGeneratorPage from './pages/imageGeneratorPage';
+
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {

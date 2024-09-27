@@ -13,13 +13,21 @@ const ImageGeneratorPage = () => {
   const navigate = useNavigate();
 
   const [prompt, setPrompt] = useState('');
-  const [overlayText, setOverlayText] = useState('');
+  const [overlayTitle, setOverlayTitle] = useState('');
+  const [overlayRequirements, setOverlayRequirements] = useState('');
+  const [overlayDescription, setOverlayDescription] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [processedImageUrl, setProcessedImageUrl] = useState('');
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [step, setStep] = useState(1);
+
+  useEffect(() => {
+    fetchImages();
+    fetchUserProfile();
+  }, []);
 
   const generateImage = async () => {
     if (!prompt.trim()) {
@@ -43,17 +51,22 @@ const ImageGeneratorPage = () => {
   };
 
   const processImage = async () => {
-    if (!imageUrl || !overlayText.trim()) {
-      setError('Por favor, genere una imagen y proporcione un texto para superponer.');
+    if (!imageUrl || !overlayTitle.trim() || !overlayRequirements.trim() || !overlayDescription.trim()) {
+      setError('Por favor, genere una imagen y proporcione todos los textos para superponer.');
       return;
     }
     setError('');
     setIsLoading(true);
     try {
+      const overlayText = JSON.stringify({
+        title: overlayTitle,
+        requirements: overlayRequirements,
+        description: overlayDescription
+      });
       const response = await processImageApi(imageUrl, overlayText, prompt);
       if (response.data && response.data.processedImageUrl) {
         setProcessedImageUrl(response.data.processedImageUrl);
-        fetchImages();
+        await fetchImages();
       } else {
         throw new Error('La respuesta no contiene una URL de imagen procesada válida');
       }
@@ -88,39 +101,118 @@ const ImageGeneratorPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchImages();
-    fetchUserProfile();
-  }, []);
-
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
     setError('');
   };
 
-  const handleOverlayTextChange = (e) => {
-    setOverlayText(e.target.value);
+  const handleOverlayTitleChange = (e) => {
+    setOverlayTitle(e.target.value);
     setError('');
   };
 
+  const handleOverlayRequirementsChange = (e) => {
+    setOverlayRequirements(e.target.value);
+    setError('');
+  };
+
+  const handleOverlayDescriptionChange = (e) => {
+    setOverlayDescription(e.target.value);
+    setError('');
+  };
+
+  const nextStep = () => {
+    setStep(step + 1);
+  };
+
+  const prevStep = () => {
+    setStep(step - 1);
+  };
+
+  const renderStep = () => {
+    return (
+      <div className="flex flex-col md:flex-row gap-6">
+        <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-md">
+          {step === 1 && (
+            <>
+              <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 1: Generar Imagen</h2>
+              <ImageForm
+                prompt={prompt}
+                onPromptChange={handlePromptChange}
+                onGenerateImage={generateImage}
+                isLoading={isLoading}
+                error={error}
+              />
+              {imageUrl && (
+                <button
+                  onClick={nextStep}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded mt-4 transition duration-300"
+                >
+                  Siguiente
+                </button>
+              )}
+            </>
+          )}
+          {step === 2 && (
+            <>
+              <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 2: Procesar Imagen</h2>
+              <ImageForm
+                overlayTitle={overlayTitle}
+                onOverlayTitleChange={handleOverlayTitleChange}
+                overlayRequirements={overlayRequirements}
+                onOverlayRequirementsChange={handleOverlayRequirementsChange}
+                overlayDescription={overlayDescription}
+                onOverlayDescriptionChange={handleOverlayDescriptionChange}
+                onProcessImage={processImage}
+                isLoading={isLoading}
+                error={error}
+              />
+              <div className="mt-4">
+                <button
+                  onClick={prevStep}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded mr-2 transition duration-300"
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={nextStep}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded transition duration-300"
+                >
+                  Finalizar
+                </button>
+              </div>
+            </>
+          )}
+          {step === 3 && (
+            <>
+              <h2 className="text-2xl font-bold mb-4 text-gray-200">Resultado Final</h2>
+              <button
+                onClick={() => setStep(1)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded mt-4 transition duration-300"
+              >
+                Crear Nueva Imagen
+              </button>
+            </>
+          )}
+        </div>
+        <div className="w-full md:w-1/2 bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4 text-gray-200">Vista Previa</h2>
+          <ImagePreview imageUrl={processedImageUrl || imageUrl} />
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-900">
       <Navbar />
       <div className="container mx-auto p-6 flex-grow">
-        <ImageForm
-          prompt={prompt}
-          onPromptChange={handlePromptChange}
-          overlayText={overlayText}
-          onOverlayTextChange={handleOverlayTextChange}
-          onGenerateImage={generateImage}
-          onProcessImage={processImage}
-          isLoading={isLoading}
-          error={error}
-        />
-
-        <ImagePreview imageUrl={processedImageUrl || imageUrl} />
-
-        <ImageList images={images} isLoading={isLoading} />
+        <h1 className="text-3xl font-bold mb-6 text-center text-gray-200">Generador de Imágenes</h1>
+        {renderStep()}
+        <div className="mt-8 bg-gray-800 p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-4 text-gray-200">Imágenes Generadas</h2>
+          <ImageList images={images} isLoading={isLoading} />
+        </div>
       </div>
     </div>
   );

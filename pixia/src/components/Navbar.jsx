@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -22,15 +22,13 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         {isAuthenticated ? (
           <>
+            <span className="text-white mr-4">Bienvenido, {user.username}</span>
             <button 
               onClick={handleLogout}
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"
             >
               Cerrar sesión
             </button>
-            <div className="w-10 h-10 bg-gray-700 rounded-full overflow-hidden">
-              {/* Aquí puedes agregar la imagen del usuario si está disponible */}
-            </div>
           </>
         ) : (
           <>

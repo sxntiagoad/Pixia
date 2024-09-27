@@ -8,8 +8,6 @@ function LandingPage() {
     <div className="bg-gray-900 min-h-screen flex flex-col bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }}>
       {/* Barra superior */}
       <Navbar />
-      
-
       {/* Contenido principal */}
       <main className="flex-grow flex flex-col items-center justify-center px-4 text-center bg-black bg-opacity-50">
         <h1 className="text-5xl font-bold text-white mb-6">Bienvenido a Pixia</h1>
