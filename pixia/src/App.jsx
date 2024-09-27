@@ -4,7 +4,7 @@ import LoginPage from './pages/LoginPage';
 import LandingPage from './pages/landingPage';
 import { AuthProvider } from './context/AuthContext';
 import ImageGeneratorPage from './pages/imageGeneratorPage';
-import VacancyHistoryPage from './pages/VacancyHistoryPage';
+import VacancyHistoryPage from './pages/PostHistoryPage';
 
 import ProtectedRoute from './components/ProtectedRoute';
 

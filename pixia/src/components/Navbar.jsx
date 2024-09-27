@@ -19,7 +19,7 @@ const Navbar = () => {
           <Link to="/ImageGeneratorPage" className="text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out">Crear Vacante</Link>
           {/* <Link to="/vacantes" className="text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out">Vacantes</Link> */}
           {isAuthenticated && (
-            <Link to="/historial-vacantes" className="text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out">Historial de Vacantes</Link>
+            <Link to="/historial-vacantes" className="text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out">Historial de Posts</Link>
           )}
           <Link to="/ajustes" className="text-gray-300 hover:text-white hover:bg-gray-700 px-3 py-2 rounded-md text-sm font-medium transition duration-300 ease-in-out">Ajustes</Link>
         </div>

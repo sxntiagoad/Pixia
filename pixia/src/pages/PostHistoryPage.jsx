@@ -25,7 +25,7 @@ const VacancyHistoryPage = () => {
     <div className="min-h-screen bg-gray-900">
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold mb-8 text-gray-200">Historial de vacantes creadas</h1>
+        <h1 className="text-4xl font-bold mb-8 text-gray-200">Historial de Posts creados</h1>
         <div className="mt-8">
           {isLoading ? (
             <p className="text-xl text-gray-400">Cargando imágenes...</p>
