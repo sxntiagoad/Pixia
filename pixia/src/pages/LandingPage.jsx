@@ -30,7 +30,7 @@ function LandingPage() {
           </div>
         </div>
 
-        <Link to="/login" className="bg-green-500 hover:bg-green-400 text-white font-bold py-4 px-8 rounded-full text-xl transition duration-300 transform hover:scale-110 hover:shadow-lg hover:rotate-1 animate-pulse">
+        <Link to="/login" className="bg-green-500 hover:bg-green-400 text-white font-bold py-4 px-8 mb-12 rounded-full text-xl transition duration-300 transform hover:scale-110 hover:shadow-lg hover:rotate-1 animate-pulse">
           Comenzar a Crear
         </Link>
       </main>
