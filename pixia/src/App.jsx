@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
-import LandingPage from './pages/landingPage';
+import LandingPage from './pages/LandingPage';
 import { AuthProvider } from './context/AuthContext';
 import ImageGeneratorPage from './pages/imageGeneratorPage';
 import VacancyHistoryPage from './pages/PostHistoryPage';

@@ -1,15 +1,17 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import backgroundImage from '../assets/fondoPixia.jpg';
 import Navbar from '../components/Navbar';
+import poweredByImage from '../assets/poweredby.png'; // Asegúrate de que la ruta sea correcta
 
 function LandingPage() {
   return (
-    <div className="bg-gray-900 min-h-screen flex flex-col bg-cover bg-center" style={{ backgroundImage: `url(${backgroundImage})` }}>
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-black via-black to-green-900">
       {/* Barra superior */}
       <Navbar />
+      
       {/* Contenido principal */}
-      <main className="flex-grow flex flex-col items-center justify-center px-4 text-center bg-black bg-opacity-50">
+      <main className="flex-grow flex flex-col items-center justify-center px-4 text-center">
+        <img src={poweredByImage} alt="Powered by" className="mb-8 max-w-md w-full" />
         <h1 className="text-5xl font-bold text-white mb-6">Bienvenido a Pixia</h1>
         <p className="text-xl text-gray-400 mb-12">Crea vacantes atractivas con el poder de la inteligencia artificial</p>
 
@@ -28,7 +30,7 @@ function LandingPage() {
           </div>
         </div>
 
-        <Link to="/login" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full text-xl transition duration-300">
+        <Link to="/login" className="bg-green-500 hover:bg-green-400 text-white font-bold py-4 px-8 rounded-full text-xl transition duration-300 transform hover:scale-110 hover:shadow-lg hover:rotate-1 animate-pulse">
           Comenzar a Crear
         </Link>
       </main>
