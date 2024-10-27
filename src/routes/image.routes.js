@@ -7,6 +7,6 @@ const router = Router();
 router.post("/generate-image", generateImage);
 router.get("/", getImages);
 router.post("/process-image", processImage);
-router.post("/upload-selected-image", uploadSelectedImage);
+router.post("/upload-variation", uploadSelectedImage);
 
 export default router;

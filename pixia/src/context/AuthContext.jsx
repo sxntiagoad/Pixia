@@ -82,11 +82,12 @@ export const AuthProvider = ({ children }) => {
     return (
         <AuthContext.Provider value={{
             signup,
-            signin, // Añadir signin al contexto
-            logout, // Añadimos logout al contexto
+            signin,
+            logout,
             user,
             isAuthenticated,
-            errors
+            errors,
+            setUser, // Asegúrate de incluir setUser aquí
         }}>
             {children}
         </AuthContext.Provider>

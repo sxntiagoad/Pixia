@@ -50,11 +50,22 @@ export const generateImage = async (req, res) => {
       }
     } catch (error) {
       console.error('Error detallado al generar la imagen:', error);
-      console.error('Stack trace:', error.stack);
+      
+      let errorMessage = 'Error al generar la imagen';
+      if (error.response) {
+        if (error.response.status === 403) {
+          errorMessage = 'No tienes permiso para usar este modelo de IA. Por favor, verifica tu suscripción o usa un modelo diferente.';
+        } else {
+          errorMessage = `Error del servidor: ${error.response.status}`;
+        }
+      } else if (error.request) {
+        errorMessage = 'No se pudo conectar con el servidor de IA. Por favor, intenta de nuevo más tarde.';
+      }
+      
       res.status(500).json({ 
-        mensaje: 'Error al generar la imagen', 
+        mensaje: errorMessage, 
         error: error.message,
-        detalles: error.stack
+        detalles: error.response ? error.response.data.toString() : ''
       });
     }
 };

@@ -240,14 +240,14 @@ const ImageGeneratorPage = () => {
             </div>
             <div className="mb-4">
               <label htmlFor="overlayRequirements" className="block text-sm font-medium text-gray-300 mb-2">Requisitos</label>
-              <input
-                type="text"
+              <textarea
                 id="overlayRequirements"
                 value={overlayRequirements}
                 onChange={handleOverlayRequirementsChange}
                 className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 placeholder="Requisitos"
-              />
+                rows="3"
+              ></textarea>
             </div>
             <div className="mb-4">
               <label htmlFor="overlayDescription" className="block text-sm font-medium text-gray-300 mb-2">Descripción</label>

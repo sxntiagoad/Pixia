@@ -173,21 +173,24 @@ function getRandomStyle(styles) {
 }
 
 function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight){
-    const imageAspectRadio = image.width / image.height;
+    const imageAspectRatio = image.width / image.height;
     const canvasAspectRatio = canvasWidth / canvasHeight;
     let drawWidth, drawHeight, drawX, drawY;
 
     if(imageAspectRatio > canvasAspectRatio){
         drawHeight = canvasHeight;
-        drawWidth = drawHeight * imageAspectRadio;
+        drawWidth = drawHeight * imageAspectRatio;
         drawX = (canvasWidth - drawWidth) / 2;
         drawY = 0;
     } else {
         drawWidth = canvasWidth;
-        drawHeight = drawWidth / imageAspectRadio;
+        drawHeight = drawWidth / imageAspectRatio;
         drawX = 0;
         drawY = (canvasHeight - drawHeight) / 2;
     }
+
+    // Añadir esta línea para dibujar la imagen en el canvas
+    ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 }
 // funcion para dibujar texto con estilos
 function drawText(ctx, texts, style, width, height){
