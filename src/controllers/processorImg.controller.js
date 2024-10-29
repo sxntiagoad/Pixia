@@ -1,5 +1,7 @@
 import { createCanvas, loadImage } from "canvas";
 import axios from "axios";
+import TEXT_CONTAINERS from "../styles/textContainers.js";
+import TEXT_STYLES from "../styles/textStyles.js";
 //def formatos de post
 const IMAGE_FORMATS = {
     LINKEDIN_POST: { width:1200, height: 627 },
@@ -7,80 +9,6 @@ const IMAGE_FORMATS = {
     INSTAGRAM_STORY: { width: 1080, height: 1920 },
     FACEBOOK_POST: { width: 1200, height: 630 }
 };
-//Estilos de decoracion para el contenedor del texto
-
-const TEXT_CONTAINERS = {
-    gradientLeft: (ctx, width, height) => {
-      const gradient = ctx.createLinearGradient(0, 0, width * 0.6, 0);
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width * 0.6, height);
-    },
-    
-    gradientBottom: (ctx, width, height) => {
-      const gradient = ctx.createLinearGradient(0, height * 0.5, 0, height);
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0.8)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, height * 0.5, width, height * 0.5);
-    },
-    
-    geometricShape: (ctx, width, height) => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(width * 0.5, 0);
-      ctx.lineTo(width * 0.4, height);
-      ctx.lineTo(0, height);
-      ctx.closePath();
-      ctx.fill();
-    },
-    
-    circularOverlay: (ctx, width, height) => {
-      const gradient = ctx.createRadialGradient(
-        width * 0.3, height * 0.5, 0,
-        width * 0.3, height * 0.5, width * 0.5
-      );
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0.8)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height);
-    }
-  };
-  
-  // Estilos de texto
-  const TEXT_STYLES = {
-    modern: {
-      titleFont: 'bold 48px Helvetica',
-      titleColor: '#ffffff',
-      subtitleFont: '36px Helvetica',
-      subtitleColor: '#e0e0e0',
-      shadow: { blur: 5, offset: 2 }
-    },
-    elegant: {
-      titleFont: 'bold 52px Georgia',
-      titleColor: '#ffd700',
-      subtitleFont: '32px Georgia',
-      subtitleColor: '#ffffff',
-      shadow: { blur: 3, offset: 1 }
-    },
-    minimal: {
-      titleFont: '46px Arial',
-      titleColor: '#ffffff',
-      subtitleFont: '30px Arial',
-      subtitleColor: '#cccccc',
-      shadow: { blur: 0, offset: 0 }
-    },
-    bold: {
-      titleFont: 'bold 54px Impact',
-      titleColor: '#ffffff',
-      subtitleFont: 'bold 38px Arial',
-      subtitleColor: '#ffd700',
-      shadow: { blur: 8, offset: 3 }
-    }
-  };
-
 export const processImage = async (req, res) => {
     try {
         const { imageUrl, overlayText, prompt, format } = req.body;
@@ -138,38 +66,62 @@ export const uploadSelectedImage = async (req, res) => {
 
 // Función para generar una variación específica
 async function generateVariation(variationNumber, imageUrl, texts, format) {
-  // Obtener dimensiones del formato seleccionado
-  const dimensions = IMAGE_FORMATS[format] || IMAGE_FORMATS.LINKEDIN_POST;
-  const { width, height } = dimensions;
 
-  // Crear canvas y contexto
-  const canvas = createCanvas(width, height);
-  const ctx = canvas.getContext('2d');
+    const usedStyles = new Set();
 
-  // Descargar y dibujar imagen base
-  const image = await loadImage(imageUrl);
-  await fitImageToCanvas(ctx, image, width, height);
+    // Obtener dimensiones del formato seleccionado
+    const dimensions = IMAGE_FORMATS[format] || IMAGE_FORMATS.LINKEDIN_POST;
+    const { width, height } = dimensions;
 
-  // Seleccionar estilos aleatorios para esta variación
-  const containerStyle = getRandomStyle(TEXT_CONTAINERS);
-  console.log('Estilo de contenedor seleccionado:', containerStyle.name);
+    // Crear canvas y contexto
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext('2d');
 
-  const textStyle = getRandomStyle(TEXT_STYLES);
-  console.log('Estilo de texto seleccionado:', textStyle);
+    // Descargar y dibujar imagen base
+    const image = await loadImage(imageUrl);
+    await fitImageToCanvas(ctx, image, width, height);
 
-  // Aplicar contenedor de texto aleatorio
-  containerStyle(ctx, width, height);
+    // Seleccionar estilos aleatorios para esta variación
+    const containerStyle = getRandomStyle(TEXT_CONTAINERS, usedStyles);
+    if (!containerStyle) {
+        throw new Error('No se pudo seleccionar un estilo de contenedor');
+    }
+    console.log('Estilo de contenedor seleccionado:', containerStyle.name);
 
-  // Aplicar estilos de texto aleatorios y dibujar
-  await drawText(ctx, texts, textStyle, width, height);
+    // Aplicar contenedor de texto aleatorio y obtener dimensiones
+    const container = containerStyle(ctx, width, height);
 
-  return canvas.toBuffer('image/png');
+    // Seleccionar estilos de texto aleatorios
+    const textStyle = getRandomStyle(TEXT_STYLES, usedStyles);
+    if (!textStyle) {
+        throw new Error('No se pudo seleccionar un estilo de texto');
+    }
+    console.log('Estilo de texto seleccionado:', textStyle);
+
+    // Aplicar estilos de texto aleatorios y dibujar
+    await drawText(ctx, texts, textStyle, width, height, container);
+
+    return canvas.toBuffer('image/png');
 }
 
-// Función para seleccionar un estilo aleatorio
-function getRandomStyle(styles) {
-  const keys = Object.keys(styles);
-  return styles[keys[Math.floor(Math.random() * keys.length)]];
+// Función para seleccionar un estilo aleatorio sin repeticiones en la misma iteración
+function getRandomStyle(styles, usedStyles) {
+    const keys = Object.keys(styles);
+
+    // Si todos los estilos han sido utilizados, no se puede seleccionar más
+    if (usedStyles.size === keys.length) {
+        return null; // O puedes lanzar un error si prefieres
+    }
+
+    let randomKey;
+    do {
+        randomKey = keys[Math.floor(Math.random() * keys.length)];
+    } while (usedStyles.has(randomKey)); // Asegurarse de que no se repita
+
+    // Agregar el estilo seleccionado al conjunto de utilizados
+    usedStyles.add(randomKey);
+
+    return styles[randomKey];
 }
 
 function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight){
@@ -193,47 +145,50 @@ function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight){
     ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 }
 // funcion para dibujar texto con estilos
-function drawText(ctx, texts, style, width, height){
-    const {title, requirements, description} = texts;
-    const {titleFont, titleColor, subtitleFont, subtitleColor, shadow} = style;
+function drawText(ctx, texts, style, width, height, container){
+    const { title, requirements, description } = texts;
+    const { titleFont, titleColor, subtitleFont, subtitleColor, shadow } = style;
 
-    //configurar sombra
+    // Configurar sombra
     ctx.shadowBlur = shadow.blur;
     ctx.shadowOffsetX = shadow.offset;
     ctx.shadowOffsetY = shadow.offset;
     ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
 
-    //dibujar titulo
+    // Dibujar título
     ctx.font = titleFont;
     ctx.fillStyle = titleColor;
-    drawWrappedText(ctx, title, width * 0.1, height * 0.2, width * 0.8);
+    drawTextSection(ctx, title, 30, 40, width / 2); // Usar la mitad del ancho
 
-    //dibujar requisitos
+    // Dibujar requisitos
     ctx.font = subtitleFont;
     ctx.fillStyle = subtitleColor;
-    drawWrappedText(ctx, requirements, width * 0.1, height * 0.4, width * 0.8);
+    drawTextSection(ctx, requirements, 20, 80, width / 2); // Usar la mitad del ancho
 
-    //dibujar descripcion
-    drawWrappedText(ctx, description, width * 0.1, height * 0.6, width * 0.8);
+    // Dibujar descripción
+    ctx.font = subtitleFont;
+    ctx.fillStyle = subtitleColor;
+    drawTextSection(ctx, description, 20, 120, width / 2); // Usar la mitad del ancho
 }
 
-//funcion auxiliar para envolver texto
-function drawWrappedText(ctx, text, x, y, maxWidth) {
+// Nueva función para dibujar secciones de texto
+function drawTextSection(ctx, text, fontSize, textY, maxWidth) {
+    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
     const words = text.split(' ');
     let line = '';
-    let testLine = '';
-    const lineHeight = parseInt(ctx.font) * 1.2;
-  
+    const textX = 10; // Ajusta la posición horizontal según sea necesario
     for (let n = 0; n < words.length; n++) {
-      testLine = line + words[n] + ' ';
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && n > 0) {
-        ctx.fillText(line, x, y);
-        line = words[n] + ' ';
-        y += lineHeight;
-      } else {
-        line = testLine;
-      }
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+            ctx.fillText(line, textX, textY); // Dibuja la línea
+            line = words[n] + ' ';
+            textY += fontSize + 10; // Espacio entre líneas
+        } else {
+            line = testLine;
+        }
     }
-    ctx.fillText(line, x, y);
-  }
+    ctx.fillText(line, textX, textY); // Dibuja la última línea
+}
+
