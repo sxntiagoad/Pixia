@@ -1,24 +1,22 @@
 import { createCanvas, loadImage } from "canvas";
 import axios from "axios";
+import {uploadToS3} from "../s3config.js"
 import TEXT_CONTAINERS from "../styles/textContainers.js";
 import TEXT_STYLES from "../styles/textStyles.js";
+import Image from "../models/image.model.js";
 //def formatos de post
-const IMAGE_FORMATS = {
-    LINKEDIN_POST: { width:1200, height: 627 },
-    INSTAGRAM_POST: { width:1080, height: 1080},
-    INSTAGRAM_STORY: { width: 1080, height: 1920 },
-    FACEBOOK_POST: { width: 1200, height: 630 }
-};
+const SQUARE_FORMAT = { width: 1080, height: 1080 };
+
 export const processImage = async (req, res) => {
     try {
-        const { imageUrl, overlayText, prompt, format } = req.body;
+        const { imageUrl, overlayText, prompt } = req.body;
         const { title, requirements, description } = JSON.parse(overlayText);
         //genera 4 variaciones del post distintas
         const variations = await Promise.all([
-            generateVariation(1, imageUrl, { title, requirements, description }, format),
-            generateVariation(2, imageUrl, { title, requirements, description }, format),
-            generateVariation(3, imageUrl, { title, requirements, description }, format),
-            generateVariation(4, imageUrl, { title, requirements, description }, format)
+            generateVariation(1, imageUrl, { title, requirements, description }),
+            generateVariation(2, imageUrl, { title, requirements, description }),
+            generateVariation(3, imageUrl, { title, requirements, description }),
+            generateVariation(4, imageUrl, { title, requirements, description })
         ]);
 
         const base64Variations = variations.map((buffer, index)=> {
@@ -65,13 +63,12 @@ export const uploadSelectedImage = async (req, res) => {
 };
 
 // Función para generar una variación específica
-async function generateVariation(variationNumber, imageUrl, texts, format) {
+async function generateVariation(variationNumber, imageUrl, texts) {
 
     const usedStyles = new Set();
 
     // Obtener dimensiones del formato seleccionado
-    const dimensions = IMAGE_FORMATS[format] || IMAGE_FORMATS.LINKEDIN_POST;
-    const { width, height } = dimensions;
+    const { width, height } = SQUARE_FORMAT;
 
     // Crear canvas y contexto
     const canvas = createCanvas(width, height);
@@ -123,25 +120,38 @@ function getRandomStyle(styles, usedStyles) {
 
     return styles[randomKey];
 }
+function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight) {
+    // Limpiar el canvas primero
+    ctx.fillStyle = '#FFFFFF'; // Color de fondo blanco
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight){
     const imageAspectRatio = image.width / image.height;
     const canvasAspectRatio = canvasWidth / canvasHeight;
     let drawWidth, drawHeight, drawX, drawY;
 
-    if(imageAspectRatio > canvasAspectRatio){
-        drawHeight = canvasHeight;
-        drawWidth = drawHeight * imageAspectRatio;
-        drawX = (canvasWidth - drawWidth) / 2;
-        drawY = 0;
-    } else {
+    // Si la imagen es más ancha que alta comparada con el canvas
+    if (imageAspectRatio > canvasAspectRatio) {
+        // Ajustar al ancho del canvas
         drawWidth = canvasWidth;
-        drawHeight = drawWidth / imageAspectRatio;
+        drawHeight = canvasWidth / imageAspectRatio;
         drawX = 0;
         drawY = (canvasHeight - drawHeight) / 2;
+    } else {
+        // Ajustar al alto del canvas
+        drawHeight = canvasHeight;
+        drawWidth = canvasHeight * imageAspectRatio;
+        drawX = (canvasWidth - drawWidth) / 2;
+        drawY = 0;
     }
+    // Asegurarse de que las dimensiones no sean negativas
+    drawWidth = Math.max(0, drawWidth);
+    drawHeight = Math.max(0, drawHeight);
 
-    // Añadir esta línea para dibujar la imagen en el canvas
+    // Dibujar un fondo blanco primero
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Dibujar la imagen manteniendo su proporción
     ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 }
 // funcion para dibujar texto con estilos

@@ -1,7 +1,33 @@
 import axios from 'axios';
 
-export const generateImageApi = (prompt) => {
-  return axios.post('/api/images/generate-image', { prompt });
+export const improvePromptApi = async (prompt) => {
+  try {
+    const response = await axios.post('/api/prompts/process', { prompt });
+    return response.data;
+  } catch (error) {
+    console.error('Error improving prompt:', error);
+    throw error;
+  }
+};
+
+export const generateImageApi = async (prompt, improvedPrompt) => {
+  try {
+    // Si no hay improvedPrompt, primero mejoramos el prompt
+    if (!improvedPrompt) {
+      const { improvedPrompt: newImprovedPrompt } = await improvePromptApi(prompt);
+      improvedPrompt = newImprovedPrompt;
+    }
+
+    const response = await axios.post('/api/images/generate-image', { 
+      prompt,
+      improvedPrompt 
+    });
+    
+    return response;
+  } catch (error) {
+    console.error('Error generating image:', error);
+    throw error;
+  }
 };
 
 export const fetchImagesApi = () => {
