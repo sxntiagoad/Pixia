@@ -158,17 +158,17 @@ function drawText(ctx, texts, style, width, height, container){
     // Dibujar título
     ctx.font = titleFont;
     ctx.fillStyle = titleColor;
-    drawTextSection(ctx, title, 30, 40, width / 2); // Usar la mitad del ancho
+    drawTextSection(ctx, title, 50, 40, width / 2); // Usar la mitad del ancho
 
     // Dibujar requisitos
     ctx.font = subtitleFont;
     ctx.fillStyle = subtitleColor;
-    drawTextSection(ctx, requirements, 20, 80, width / 2); // Usar la mitad del ancho
+    drawTextSection(ctx, requirements, 20, 200, width / 4); // Usar la mitad del ancho
 
     // Dibujar descripción
     ctx.font = subtitleFont;
     ctx.fillStyle = subtitleColor;
-    drawTextSection(ctx, description, 20, 120, width / 2); // Usar la mitad del ancho
+    drawTextSection(ctx, description, 20, 300, width / 4); // Usar la mitad del ancho
 }
 
 // Nueva función para dibujar secciones de texto
