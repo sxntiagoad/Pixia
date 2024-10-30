@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.routes.js';
 import imageRoutes from './routes/image.routes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import promptRoutes from './routes/prompt.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,7 @@ app.use(cookieParser()); //parse cookies
 // Rutas
 app.use("/api/images", imageRoutes); //use image routes
 app.use("/api", authRoutes); //use auth routes
+app.use('/api/prompts', promptRoutes);
 
 // Servir archivos estáticos en producción
 if (process.env.NODE_ENV === 'production') {
@@ -47,12 +49,8 @@ app.use((req, res, next) => {
 
 // Middleware para manejar errores
 app.use((err, req, res, next) => {
-    console.error(`Error en la solicitud: ${req.method} ${req.url}`);
-    console.error(err);
-    res.status(500).json({
-        mensaje: 'Error interno del servidor',
-        error: err.message
-    });
+    console.error('Error:', err);
+    res.status(500).json({ error: err.message });
 });
 
 // Aumenta el tiempo de espera a 2 minutos (120000 ms)

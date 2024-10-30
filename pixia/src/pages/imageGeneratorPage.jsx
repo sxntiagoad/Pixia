@@ -7,6 +7,9 @@ import ImageList from '../components/ImageList';
 import { generateImageApi, fetchImagesApi, processImageApi, uploadSelectedImageApi } from '../api/imageApi';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaImage, FaEdit, FaMagic, FaCheck, FaFileAlt } from 'react-icons/fa';
+import StepIndicator from '../components/StepIndicator';
 
 const ImageGeneratorPage = () => {
   const { logout, user, setUser } = useAuth();
@@ -69,7 +72,7 @@ const ImageGeneratorPage = () => {
       const response = await processImageApi(imageUrl, overlayText, prompt, selectedFormat);
       if (response.data && response.data.variations) {
         setVariations(response.data.variations);
-        setStep(3); // Avanzar al paso de selección de variación
+        setStep(4); // Avanzar al paso de selección de variación
       } else {
         throw new Error('La respuesta no contiene variaciones válidas');
       }
@@ -115,7 +118,7 @@ const ImageGeneratorPage = () => {
         if (response.data && response.data.processedImageUrl) {
             setProcessedImageUrl(response.data.processedImageUrl);
             await fetchImages();
-            setStep(4); // Avanzar al paso de resultado final
+            setStep(5); // Avanzar al paso de resultado final
 
             // Limpiar todos los datos
             setPrompt('');
@@ -194,7 +197,33 @@ const ImageGeneratorPage = () => {
       case 1:
         return (
           <>
-            <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 1: Generar Imagen</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 1: Elegir Plantilla</h2>
+            <div className="mb-4">
+              <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">Formato</label>
+              <select
+                id="format"
+                value={selectedFormat}
+                onChange={(e) => setSelectedFormat(e.target.value)}
+                className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="LINKEDIN_POST">LinkedIn Post</option>
+                <option value="INSTAGRAM_POST">Instagram Post</option>
+                <option value="INSTAGRAM_STORY">Instagram Story</option>
+                <option value="FACEBOOK_POST">Facebook Post</option>
+              </select>
+            </div>
+            <button
+              onClick={() => setStep(2)}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+            >
+              Siguiente
+            </button>
+          </>
+        );
+      case 2:
+        return (
+          <>
+            <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 2: Generar Imagen</h2>
             <div className="mb-4">
               <label htmlFor="prompt" className="block text-sm font-medium text-gray-300 mb-2">Prompt</label>
               <input
@@ -215,18 +244,24 @@ const ImageGeneratorPage = () => {
             </button>
             {imageUrl && (
               <button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(3)}
                 className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
               >
                 Siguiente
               </button>
             )}
+            <button
+              onClick={() => setStep(1)}
+              className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
+            >
+              Anterior
+            </button>
           </>
         );
-      case 2:
+      case 3:
         return (
           <>
-            <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 2: Procesar Imagen</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 3: Personalizar</h2>
             <div className="mb-4">
               <label htmlFor="overlayTitle" className="block text-sm font-medium text-gray-300 mb-2">Título</label>
               <input
@@ -260,20 +295,6 @@ const ImageGeneratorPage = () => {
                 rows="3"
               ></textarea>
             </div>
-            <div className="mb-4">
-              <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">Formato</label>
-              <select
-                id="format"
-                value={selectedFormat}
-                onChange={(e) => setSelectedFormat(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="LINKEDIN_POST">LinkedIn Post</option>
-                <option value="INSTAGRAM_POST">Instagram Post</option>
-                <option value="INSTAGRAM_STORY">Instagram Story</option>
-                <option value="FACEBOOK_POST">Facebook Post</option>
-              </select>
-            </div>
             <button
               onClick={processImage}
               disabled={isLoading}
@@ -282,17 +303,17 @@ const ImageGeneratorPage = () => {
               {isLoading ? 'Procesando...' : 'Procesar Imagen'}
             </button>
             <button
-              onClick={() => setStep(1)}
+              onClick={() => setStep(2)}
               className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
             >
               Anterior
             </button>
           </>
         );
-      case 3:
+      case 4:
         return (
           <>
-            <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 3: Seleccionar Variación</h2>
+            <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 4: Seleccionar Variación</h2>
             <div className="grid grid-cols-2 gap-4">
               {variations.map((variation) => (
                 <div
@@ -306,20 +327,20 @@ const ImageGeneratorPage = () => {
             </div>
             <button
               onClick={uploadSelectedVariation}
-              disabled={isLoading || !selectedVariation} // Asegúrate de que no esté deshabilitado
+              disabled={isLoading || !selectedVariation}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
             >
               {isLoading ? 'Subiendo...' : 'Subir Variación Seleccionada'}
             </button>
             <button
-              onClick={() => setStep(2)}
+              onClick={() => setStep(3)}
               className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
             >
               Anterior
             </button>
           </>
         );
-      case 4:
+      case 5:
         return (
           <>
             <h2 className="text-2xl font-bold mb-4 text-gray-200">Resultado Final</h2>
@@ -337,16 +358,51 @@ const ImageGeneratorPage = () => {
     }
   };
 
+  const renderStepIndicator = () => (
+    <div className="mb-8">
+      <StepIndicator 
+        steps={[
+          { icon: <FaFileAlt />, label: "Elegir Plantilla" },
+          { icon: <FaImage />, label: "Generar Imagen" },
+          { icon: <FaEdit />, label: "Personalizar" },
+          { icon: <FaMagic />, label: "Variaciones" },
+          { icon: <FaCheck />, label: "Finalizar" }
+        ]}
+        currentStep={step}
+      />
+    </div>
+  );
+
   return (
-    <div className="flex flex-col min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       <Navbar />
-      <div className="container mx-auto p-6 flex-grow">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-200">Generador de Vacantes</h1>
-        {renderStep()}
-        <div className="mt-8 bg-gray-800 p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4 text-gray-200">Imágenes Generadas</h2>
-          <ImageList images={images} isLoading={isLoading} />
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        {renderStepIndicator()}
+        
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="bg-gray-800 rounded-lg shadow-xl p-6"
+          >
+            {renderStep()}
+          </motion.div>
+        </AnimatePresence>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 p-4 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg text-red-300"
+          >
+            {error}
+          </motion.div>
+        )}
+
+        <ImageList images={images} />
       </div>
     </div>
   );
