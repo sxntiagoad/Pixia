@@ -1,3 +1,5 @@
+import TEXT_CONTAINERS from '../../styles/textContainers.js';
+
 export default class DefaultTemplate {
     constructor(ctx, width, height) {
         this.ctx = ctx;
@@ -24,6 +26,14 @@ export default class DefaultTemplate {
         // Configurar sombra
         this.setupShadow(style.shadow);
 
+        // Seleccionar y aplicar un contenedor de texto aleatorio
+        const containerKeys = Object.keys(TEXT_CONTAINERS);
+        const randomKey = containerKeys[Math.floor(Math.random() * containerKeys.length)];
+        const randomContainer = TEXT_CONTAINERS[randomKey];
+        randomContainer(this.ctx, this.width, this.height);
+
+        this.drawBottomBar();
+
         // Dibujar textos
         this.drawTitle(title, style);
         this.drawRequirements(requirements, style);
@@ -37,22 +47,28 @@ export default class DefaultTemplate {
         this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     }
 
+    drawBottomBar() {
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 1)'; // Blanco semitransparente
+        const barHeight = this.height * 0.135; // 10% de la altura total
+        this.ctx.fillRect(0, this.height - barHeight, this.width, barHeight);
+    }
+
     drawTitle(text, style) {
         this.ctx.font = style.titleFont;
         this.ctx.fillStyle = style.titleColor;
-        this.drawTextSection(text, 50, 40, this.width / 2);
+        this.drawTextSection(text, 60, 50, this.width / 2);
     }
 
     drawRequirements(text, style) {
         this.ctx.font = style.subtitleFont;
         this.ctx.fillStyle = style.subtitleColor;
-        this.drawTextSection(text, 20, 200, this.width / 4);
+        this.drawTextSection(text, 40, 250, this.width / 2);
     }
 
     drawDescription(text, style) {
         this.ctx.font = style.subtitleFont;
         this.ctx.fillStyle = style.subtitleColor;
-        this.drawTextSection(text, 20, 300, this.width / 4);
+        this.drawTextSection(text, 40, 450, this.width / 2);
     }
 
     drawTextSection(text, fontSize, textY, maxWidth) {
