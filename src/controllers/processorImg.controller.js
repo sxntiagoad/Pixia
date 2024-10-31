@@ -1,30 +1,28 @@
 import { createCanvas, loadImage } from "canvas";
 import axios from "axios";
+import templateRegistry from "../core/templateRegistry/TemplateRegistry.js";
 import {uploadToS3} from "../s3config.js"
-import TEXT_CONTAINERS from "../styles/textContainers.js";
-import TEXT_STYLES from "../styles/textStyles.js";
 import Image from "../models/image.model.js";
 //def formatos de post
 const SQUARE_FORMAT = { width: 1080, height: 1080 };
 
 export const processImage = async (req, res) => {
     try {
-        const { imageUrl, overlayText, prompt } = req.body;
+        const { imageUrl, overlayText, prompt, templateName = 't_default' } = req.body;
         const { title, requirements, description } = JSON.parse(overlayText);
-        //genera 4 variaciones del post distintas
+        
         const variations = await Promise.all([
-            generateVariation(1, imageUrl, { title, requirements, description }),
-            generateVariation(2, imageUrl, { title, requirements, description }),
-            generateVariation(3, imageUrl, { title, requirements, description }),
-            generateVariation(4, imageUrl, { title, requirements, description })
+            generateVariation(1, imageUrl, { title, requirements, description }, templateName),
+            generateVariation(2, imageUrl, { title, requirements, description }, templateName),
+            generateVariation(3, imageUrl, { title, requirements, description }, templateName),
+            generateVariation(4, imageUrl, { title, requirements, description }, templateName)
         ]);
 
-        const base64Variations = variations.map((buffer, index)=> {
-            return {
-                id: index + 1,
-                data: buffer.toString('base64')
-            };
-        });
+        const base64Variations = variations.map((buffer, index) => ({
+            id: index + 1,
+            data: buffer.toString('base64')
+        }));
+
         res.json({ variations: base64Variations });
     } catch (error) {
         console.error('Error procesando imágenes:', error);
@@ -62,64 +60,31 @@ export const uploadSelectedImage = async (req, res) => {
     }
 };
 
-// Función para generar una variación específica
-async function generateVariation(variationNumber, imageUrl, texts) {
-
-    const usedStyles = new Set();
-
-    // Obtener dimensiones del formato seleccionado
+async function generateVariation(variationNumber, imageUrl, texts, templateName) {
     const { width, height } = SQUARE_FORMAT;
-
-    // Crear canvas y contexto
+    
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
-    // Descargar y dibujar imagen base
+    // Cargar y ajustar imagen base
     const image = await loadImage(imageUrl);
     await fitImageToCanvas(ctx, image, width, height);
 
-    // Seleccionar estilos aleatorios para esta variación
-    const containerStyle = getRandomStyle(TEXT_CONTAINERS, usedStyles);
-    if (!containerStyle) {
-        throw new Error('No se pudo seleccionar un estilo de contenedor');
+    try {
+        // Obtener y aplicar la plantilla
+        const TemplateClass = templateRegistry.get(templateName);
+        const template = new TemplateClass(ctx, width, height);
+        await template.draw(texts);
+    } catch (error) {
+        console.error(`Error con plantilla ${templateName}, usando default:`, error);
+        const DefaultTemplate = templateRegistry.get('t_default');
+        const template = new DefaultTemplate(ctx, width, height);
+        await template.draw(texts);
     }
-    console.log('Estilo de contenedor seleccionado:', containerStyle.name);
-
-    // Aplicar contenedor de texto aleatorio y obtener dimensiones
-    const container = containerStyle(ctx, width, height);
-
-    // Seleccionar estilos de texto aleatorios
-    const textStyle = getRandomStyle(TEXT_STYLES, usedStyles);
-    if (!textStyle) {
-        throw new Error('No se pudo seleccionar un estilo de texto');
-    }
-    console.log('Estilo de texto seleccionado:', textStyle);
-
-    // Aplicar estilos de texto aleatorios y dibujar
-    await drawText(ctx, texts, textStyle, width, height, container);
 
     return canvas.toBuffer('image/png');
 }
 
-// Función para seleccionar un estilo aleatorio sin repeticiones en la misma iteración
-function getRandomStyle(styles, usedStyles) {
-    const keys = Object.keys(styles);
-
-    // Si todos los estilos han sido utilizados, no se puede seleccionar más
-    if (usedStyles.size === keys.length) {
-        return null; // O puedes lanzar un error si prefieres
-    }
-
-    let randomKey;
-    do {
-        randomKey = keys[Math.floor(Math.random() * keys.length)];
-    } while (usedStyles.has(randomKey)); // Asegurarse de que no se repita
-
-    // Agregar el estilo seleccionado al conjunto de utilizados
-    usedStyles.add(randomKey);
-
-    return styles[randomKey];
-}
 function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight) {
     // Limpiar el canvas primero
     ctx.fillStyle = '#FFFFFF'; // Color de fondo blanco
@@ -150,55 +115,7 @@ function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight) {
     // Dibujar un fondo blanco primero
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
+    
     // Dibujar la imagen manteniendo su proporción
     ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
 }
-// funcion para dibujar texto con estilos
-function drawText(ctx, texts, style, width, height, container){
-    const { title, requirements, description } = texts;
-    const { titleFont, titleColor, subtitleFont, subtitleColor, shadow } = style;
-
-    // Configurar sombra
-    ctx.shadowBlur = shadow.blur;
-    ctx.shadowOffsetX = shadow.offset;
-    ctx.shadowOffsetY = shadow.offset;
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-
-    // Dibujar título
-    ctx.font = titleFont;
-    ctx.fillStyle = titleColor;
-    drawTextSection(ctx, title, 50, 40, width / 2); // Usar la mitad del ancho
-
-    // Dibujar requisitos
-    ctx.font = subtitleFont;
-    ctx.fillStyle = subtitleColor;
-    drawTextSection(ctx, requirements, 20, 200, width / 4); // Usar la mitad del ancho
-
-    // Dibujar descripción
-    ctx.font = subtitleFont;
-    ctx.fillStyle = subtitleColor;
-    drawTextSection(ctx, description, 20, 300, width / 4); // Usar la mitad del ancho
-}
-
-// Nueva función para dibujar secciones de texto
-function drawTextSection(ctx, text, fontSize, textY, maxWidth) {
-    ctx.font = `bold ${fontSize}px Arial, sans-serif`;
-    const words = text.split(' ');
-    let line = '';
-    const textX = 10; // Ajusta la posición horizontal según sea necesario
-    for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
-            ctx.fillText(line, textX, textY); // Dibuja la línea
-            line = words[n] + ' ';
-            textY += fontSize + 10; // Espacio entre líneas
-        } else {
-            line = testLine;
-        }
-    }
-    ctx.fillText(line, textX, textY); // Dibuja la última línea
-}
-

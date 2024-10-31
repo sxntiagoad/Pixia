@@ -2,6 +2,7 @@ import express from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import templateRegistry from './core/templateRegistry/TemplateRegistry.js';
 import authRoutes from './routes/auth.routes.js';
 import imageRoutes from './routes/image.routes.js';
 import path from 'path';
@@ -10,7 +11,6 @@ import promptRoutes from './routes/prompt.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 const app = express(); //create express app
 
@@ -27,6 +27,9 @@ app.use(cookieParser()); //parse cookies
 app.use("/api/images", imageRoutes); //use image routes
 app.use("/api", authRoutes); //use auth routes
 app.use('/api/prompts', promptRoutes);
+
+// Verificar que las plantillas se registraron correctamente
+console.log('Plantillas disponibles:', Array.from(templateRegistry.templates.keys()));
 
 // Servir archivos estáticos en producción
 if (process.env.NODE_ENV === 'production') {
