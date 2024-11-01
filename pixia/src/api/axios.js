@@ -1,5 +1,8 @@
-import axios from './axios';
+import axios from 'axios';
 
-export const registerRequest = user => axios.post('/register', user);
+const instance = axios.create({
+  baseURL: 'http://localhost:3000/api',
+  withCredentials: true
+});
 
-export const loginRequest = user => axios.post('/login', user);
+export default instance;

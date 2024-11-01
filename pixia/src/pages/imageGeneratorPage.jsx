@@ -10,6 +10,28 @@ import Navbar from '../components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaImage, FaEdit, FaMagic, FaCheck, FaFileAlt } from 'react-icons/fa';
 import StepIndicator from '../components/StepIndicator';
+import { getTemplatesApi, getTemplateByIdApi } from '../api/template';
+
+const getAssetPath = (path) => {
+  if (!path) return '/placeholder.png';
+  
+  // Definir las rutas base
+  const PREVIEWS_PATH = '/src/assets/previews';
+  const TEMPLATES_PATH = '/src/assets/templates';
+  
+  // Extraer el nombre del archivo
+  const fileName = path.split('\\').pop().split('/').pop();
+  
+  // Determinar qué ruta base usar basado en el tipo de archivo
+  if (path.includes('previews')) {
+    return `${PREVIEWS_PATH}/${fileName}`;
+  } else if (path.includes('templates')) {
+    return `${TEMPLATES_PATH}/${fileName}`;
+  }
+  
+  // Por defecto, usar previews
+  return `${PREVIEWS_PATH}/${fileName}`;
+};
 
 const ImageGeneratorPage = () => {
   const { logout, user, setUser } = useAuth();
@@ -29,10 +51,15 @@ const ImageGeneratorPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [step, setStep] = useState(1);
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loadingImages, setLoadingImages] = useState({});
 
   useEffect(() => {
     fetchImages();
     fetchUserProfile();
+    fetchTemplates();
   }, []);
 
   const generateImage = async () => {
@@ -164,6 +191,33 @@ const ImageGeneratorPage = () => {
     }
   };
 
+  const fetchTemplates = async () => {
+    try {
+      setLoading(true);
+      const response = await getTemplatesApi();
+      
+      if (response.data && response.data.templates) {
+        const validTemplates = response.data.templates.filter(t => 
+          t.previewImagePath && 
+          t.baseImagePath && 
+          t.name
+        );
+        
+        const templatesWithFullUrls = validTemplates.map(template => ({
+          ...template,
+          previewImagePath: getAssetPath(template.previewImagePath),
+          baseImagePath: getAssetPath(template.baseImagePath)
+        }));
+
+        setTemplates(templatesWithFullUrls);
+      }
+    } catch (error) {
+      setError('Error al cargar las plantillas: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
     setError('');
@@ -198,26 +252,90 @@ const ImageGeneratorPage = () => {
         return (
           <>
             <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 1: Elegir Plantilla</h2>
-            <div className="mb-4">
-              <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">Formato</label>
-              <select
-                id="format"
-                value={selectedFormat}
-                onChange={(e) => setSelectedFormat(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+                <p className="text-gray-300 mt-4">Cargando plantillas...</p>
+              </div>
+            ) : templates.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-300">No hay plantillas disponibles</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {templates.map((template) => (
+                  <motion.div
+                    key={template._id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`relative rounded-lg overflow-hidden cursor-pointer border-2 max-w-[300px] mx-auto ${
+                      selectedTemplate?._id === template._id
+                        ? 'border-green-500'
+                        : 'border-transparent hover:border-green-400'
+                    }`}
+                    onClick={() => handleTemplateSelect(template)}
+                  >
+                    <div className="relative w-full h-[450px]">
+                      {template.previewImagePath && (
+                        <img
+                          src={template.previewImagePath}
+                          alt={template.name}
+                          className="w-full h-full object-contain bg-gray-900"
+                          onError={(e) => {
+                            e.target.src = '/placeholder.png';
+                          }}
+                        />
+                      )}
+                      
+                      <div className="absolute inset-0 bg-black bg-opacity-30" />
+                      
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                        <h3 className="text-white font-semibold">{template.name}</h3>
+                        <span className="text-gray-300 text-sm">
+                          {template.category}
+                        </span>
+                      </div>
+
+                      {selectedTemplate?._id === template._id && (
+                        <div className="absolute top-2 right-2 bg-green-500 rounded-full p-1">
+                          <FaCheck className="text-white" />
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-6 space-y-4">
+              {selectedTemplate && (
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    Plantilla seleccionada: {selectedTemplate.name}
+                  </h3>
+                  {selectedTemplate.aiImageConfig && (
+                    <>
+                      <p className="text-gray-300">
+                        Dimensiones: {selectedTemplate.aiImageConfig.dimensions?.width} x{" "}
+                        {selectedTemplate.aiImageConfig.dimensions?.height}
+                      </p>
+                    </>
+                  )}
+                </div>
+              )}
+
+              <button
+                onClick={handleNextStep}
+                disabled={!selectedTemplate}
+                className={`w-full py-3 rounded-lg font-semibold transition-all duration-300 ${
+                  selectedTemplate
+                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                }`}
               >
-                <option value="LINKEDIN_POST">LinkedIn Post</option>
-                <option value="INSTAGRAM_POST">Instagram Post</option>
-                <option value="INSTAGRAM_STORY">Instagram Story</option>
-                <option value="FACEBOOK_POST">Facebook Post</option>
-              </select>
+                {selectedTemplate ? 'Continuar con esta plantilla' : 'Selecciona una plantilla'}
+              </button>
             </div>
-            <button
-              onClick={() => setStep(2)}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300"
-            >
-              Siguiente
-            </button>
           </>
         );
       case 2:
@@ -318,10 +436,19 @@ const ImageGeneratorPage = () => {
               {variations.map((variation) => (
                 <div
                   key={variation.id}
-                  className={`cursor-pointer border-4 ${selectedVariation?.id === variation.id ? 'border-indigo-500' : 'border-transparent'}`}
+                  className={`relative cursor-pointer border-4 rounded-lg overflow-hidden ${
+                    selectedVariation?.id === variation.id ? 'border-indigo-500' : 'border-transparent'
+                  }`}
                   onClick={() => setSelectedVariation(variation)}
                 >
-                  <img src={`data:image/png;base64,${variation.data}`} alt={`Variación ${variation.id}`} className="w-full h-auto" />
+                  <div className="relative w-full pt-[100%]">
+                    <img 
+                      src={`data:image/png;base64,${variation.data}`} 
+                      alt={`Variación ${variation.id}`} 
+                      className="absolute top-0 left-0 w-full h-full object-contain"
+                      style={{ imageRendering: 'crisp-edges' }}
+                    />
+                  </div>
                 </div>
               ))}
             </div>
@@ -372,6 +499,37 @@ const ImageGeneratorPage = () => {
       />
     </div>
   );
+
+  const handleTemplateSelect = async (template) => {
+    try {
+      console.log('Template seleccionada:', template); // Para debugging
+      setSelectedTemplate(template); // Usar directamente la plantilla sin hacer otra llamada
+      setSelectedFormat(template.category);
+      
+      // Pre-configurar otros estados según la plantilla
+      if (template.aiImageConfig) {
+        setPrompt(template.aiImageConfig.promptGuide || '');
+      }
+    } catch (error) {
+      console.error('Error al seleccionar la plantilla:', error);
+      setError('Error al seleccionar la plantilla');
+    }
+  };
+
+  const handleNextStep = () => {
+    if (selectedTemplate) {
+      try {
+        // Configurar estados necesarios basados en la plantilla
+        if (selectedTemplate.aiImageConfig?.promptGuide) {
+          setPrompt(selectedTemplate.aiImageConfig.promptGuide);
+        }
+        setStep(2);
+      } catch (error) {
+        console.error('Error al avanzar al siguiente paso:', error);
+        setError('Error al avanzar al siguiente paso');
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
