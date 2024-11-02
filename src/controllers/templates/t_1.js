@@ -21,11 +21,6 @@ export default class Template1 extends Template {
 
         this.setupShadow(style.shadow);
 
-        const containerKeys = Object.keys(TEXT_CONTAINERS);
-        const randomKey = containerKeys[Math.floor(Math.random() * containerKeys.length)];
-        const randomContainer = TEXT_CONTAINERS[randomKey];
-        randomContainer(this.ctx, this.width, this.height);
-
         // Cargar y dibujar la imagen desde S3
         await this.drawImageFromS3(bucketName, imageKey);
 
