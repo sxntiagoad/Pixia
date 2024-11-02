@@ -11,13 +11,22 @@ export const processImage = async (req, res) => {
     try {
         const { imageUrl, overlayText, prompt, templateName = 't_default' } = req.body;
         const { title, requirements, description } = JSON.parse(overlayText);
-        
-        const variations = await Promise.all([
-            generateVariation(1, imageUrl, { title, requirements, description }, templateName),
-            generateVariation(2, imageUrl, { title, requirements, description }, templateName),
-            generateVariation(3, imageUrl, { title, requirements, description }, templateName),
-            generateVariation(4, imageUrl, { title, requirements, description }, templateName)
-        ]);
+
+        let variations;
+
+        if (templateName === 't_default') {
+            // Generar múltiples variaciones
+            variations = await Promise.all([
+                generateVariation(1, imageUrl, { title, requirements, description }, templateName),
+                generateVariation(2, imageUrl, { title, requirements, description }, templateName),
+                generateVariation(3, imageUrl, { title, requirements, description }, templateName),
+                generateVariation(4, imageUrl, { title, requirements, description }, templateName)
+            ]);
+        } else {
+            // Generar solo una variación
+            const singleVariation = await generateVariation(1, imageUrl, { title, requirements, description }, templateName);
+            variations = [singleVariation];
+        }
 
         const base64Variations = variations.map((buffer, index) => ({
             id: index + 1,
