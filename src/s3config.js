@@ -1,4 +1,4 @@
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY } from './config.js';
 
@@ -34,4 +34,28 @@ const uploadToS3 = async (buffer, fileName, contentType) => {
   }
 };
 
-export { s3Client, AWS_BUCKET_NAME, uploadToS3, AWS_BUCKET_REGION };
+const loadImageFromS3 = async (bucketName, key) => {
+  try {
+    const command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+
+    const data = await s3Client.send(command);
+    const streamToBuffer = async (stream) => {
+      return new Promise((resolve, reject) => {
+        const chunks = [];
+        stream.on('data', (chunk) => chunks.push(chunk));
+        stream.on('end', () => resolve(Buffer.concat(chunks)));
+        stream.on('error', reject);
+      });
+    };
+
+    return await streamToBuffer(data.Body);
+  } catch (error) {
+    console.error("Error al cargar la imagen desde S3:", error);
+    throw error;
+  }
+};
+
+export { s3Client, AWS_BUCKET_NAME, uploadToS3, loadImageFromS3, AWS_BUCKET_REGION };
