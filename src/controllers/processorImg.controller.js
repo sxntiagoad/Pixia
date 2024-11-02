@@ -5,6 +5,7 @@ import {uploadToS3} from "../s3config.js"
 import Image from "../models/image.model.js";
 //def formatos de post
 const SQUARE_FORMAT = { width: 1080, height: 1080 };
+const BUCKET_NAME = 'sxntiago-pixia-aws';
 
 export const processImage = async (req, res) => {
     try {
@@ -62,7 +63,7 @@ export const uploadSelectedImage = async (req, res) => {
 
 async function generateVariation(variationNumber, imageUrl, texts, templateName) {
     const { width, height } = SQUARE_FORMAT;
-    
+    const bucketName = BUCKET_NAME;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
@@ -76,12 +77,12 @@ async function generateVariation(variationNumber, imageUrl, texts, templateName)
         const template = new TemplateClass(ctx, width, height);
         console.log(TemplateClass);
         console.log(templateName);
-        await template.draw(texts);
+        await template.draw(texts, bucketName);
     } catch (error) {
         console.error(`Error con plantilla ${templateName}, usando default:`, error);
         const DefaultTemplate = templateRegistry.get('t_default');
         const template = new DefaultTemplate(ctx, width, height);
-        await template.draw(texts);
+        await template.draw(texts, bucketName);
     }
 
     return canvas.toBuffer('image/png');

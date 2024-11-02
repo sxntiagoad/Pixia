@@ -2,7 +2,7 @@ import Template from './Template.js';
 import TEXT_CONTAINERS from '../../styles/textContainers.js';
 
 export default class DefaultTemplate extends Template {
-    async draw(texts) {
+    async draw(texts, bucketName) {
         const { title, requirements, description } = texts;
         
         const style = {
