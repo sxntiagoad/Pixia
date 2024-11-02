@@ -74,6 +74,8 @@ async function generateVariation(variationNumber, imageUrl, texts, templateName)
         // Obtener y aplicar la plantilla
         const TemplateClass = templateRegistry.get(templateName);
         const template = new TemplateClass(ctx, width, height);
+        console.log(TemplateClass);
+        console.log(templateName);
         await template.draw(texts);
     } catch (error) {
         console.error(`Error con plantilla ${templateName}, usando default:`, error);

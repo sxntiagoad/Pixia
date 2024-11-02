@@ -13,8 +13,8 @@ class Template {
     }
 
     drawBottomBar() {
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'; // Blanco semitransparente
-        const barHeight = this.height * 0.1; // 10% de la altura total
+        this.ctx.fillStyle = 'rgba(255, 255, 255, 1)'; // Blanco semitransparente
+        const barHeight = this.height * 0.2;
         this.ctx.fillRect(0, this.height - barHeight, this.width, barHeight);
     }
 

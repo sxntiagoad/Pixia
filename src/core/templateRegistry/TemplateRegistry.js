@@ -33,6 +33,7 @@ export class TemplateRegistry {
                 if (path.includes('t_') && path.endsWith('.js')) {
                     const templateName = path.split('/').pop().replace('.js', '');
                     const { default: Template } = await import(`../../controllers/templates/${templateName}.js`);
+                    console.log(`Registrando plantilla ${templateName}`);
                     this.register(templateName, Template);
                 }
             }

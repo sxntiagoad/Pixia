@@ -26,10 +26,7 @@ app.use(cookieParser()); //parse cookies
 // Rutas
 app.use("/api/images", imageRoutes); //use image routes
 app.use("/api", authRoutes); //use auth routes
-app.use('/api/prompts', promptRoutes);
-
-// Verificar que las plantillas se registraron correctamente
-console.log('Plantillas disponibles:', Array.from(templateRegistry.templates.keys()));
+app.use('/api/prompts', promptRoutes); //use prompt routes
 
 // Servir archivos estáticos en producción
 if (process.env.NODE_ENV === 'production') {
