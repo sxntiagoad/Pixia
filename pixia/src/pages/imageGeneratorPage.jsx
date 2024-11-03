@@ -10,6 +10,7 @@ import Navbar from '../components/Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaImage, FaEdit, FaMagic, FaCheck, FaFileAlt } from 'react-icons/fa';
 import StepIndicator from '../components/StepIndicator';
+import { getTemplatesApi, processWithTemplateApi } from '../api/templateApi';
 
 const ImageGeneratorPage = () => {
   const { logout, user, setUser } = useAuth();
@@ -29,10 +30,13 @@ const ImageGeneratorPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [step, setStep] = useState(1);
+  const [templates, setTemplates] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState('t_default');
 
   useEffect(() => {
     fetchImages();
     fetchUserProfile();
+    fetchTemplates();
   }, []);
 
   const generateImage = async () => {
@@ -47,10 +51,10 @@ const ImageGeneratorPage = () => {
       if (response.data && response.data.imageUrl) {
         setImageUrl(response.data.imageUrl);
       } else {
-        throw new Error('La respuesta no contiene una URL de imagen válida');
+        throw new Error('No se recibió una imagen válida');
       }
     } catch (error) {
-      setError('Hubo un error al generar la imagen. Por favor, intente de nuevo.');
+      setError('Error al generar la imagen. Por favor, intente de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -64,21 +68,32 @@ const ImageGeneratorPage = () => {
     setError('');
     setIsLoading(true);
     try {
+      console.log('Template seleccionado:', selectedTemplate);
+      
       const overlayText = JSON.stringify({
         title: overlayTitle,
         requirements: overlayRequirements,
         description: overlayDescription
       });
-      const response = await processImageApi(imageUrl, overlayText, prompt, selectedFormat);
+      
+      const response = await processImageApi(
+        imageUrl,
+        overlayText,
+        prompt,
+        selectedTemplate
+      );
+
+      console.log('Respuesta del procesamiento:', response.data);
+
       if (response.data && response.data.variations) {
         setVariations(response.data.variations);
-        setStep(4); // Avanzar al paso de selección de variación
+        setStep(4);
       } else {
         throw new Error('La respuesta no contiene variaciones válidas');
       }
     } catch (error) {
+      console.error('Error detallado al procesar la imagen:', error);
       setError('Hubo un error al procesar la imagen. Por favor, intente de nuevo.');
-      console.error('Error al procesar la imagen:', error);
     } finally {
       setIsLoading(false);
     }
@@ -164,6 +179,23 @@ const ImageGeneratorPage = () => {
     }
   };
 
+  const fetchTemplates = async () => {
+    try {
+      const response = await getTemplatesApi();
+      console.log('Templates recibidos:', response.data);
+      if (response.data && response.data.templates) {
+        setTemplates(response.data.templates);
+        // Si no hay template seleccionado, seleccionar el default
+        if (!selectedTemplate && response.data.templates.includes('t_default')) {
+          setSelectedTemplate('t_default');
+        }
+      }
+    } catch (error) {
+      console.error('Error al cargar los templates:', error);
+      setError('Error al cargar los templates');
+    }
+  };
+
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
     setError('');
@@ -212,6 +244,21 @@ const ImageGeneratorPage = () => {
                 <option value="FACEBOOK_POST">Facebook Post</option>
               </select>
             </div>
+            <div className="mb-4">
+              <label htmlFor="template" className="block text-sm font-medium text-gray-300 mb-2">Template</label>
+              <select
+                id="template"
+                value={selectedTemplate}
+                onChange={(e) => setSelectedTemplate(e.target.value)}
+                className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                {templates.map(template => (
+                  <option key={template} value={template}>
+                    {template}
+                  </option>
+                ))}
+              </select>
+            </div>
             <button
               onClick={() => setStep(2)}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300"
@@ -243,12 +290,19 @@ const ImageGeneratorPage = () => {
               {isLoading ? 'Generando...' : 'Generar Imagen'}
             </button>
             {imageUrl && (
-              <button
-                onClick={() => setStep(3)}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
-              >
-                Siguiente
-              </button>
+              <div className="mt-4">
+                <img 
+                  src={imageUrl} 
+                  alt="Imagen generada" 
+                  className="w-full h-auto rounded-lg shadow-lg"
+                />
+                <button
+                  onClick={() => setStep(3)}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
+                >
+                  Siguiente
+                </button>
+              </div>
             )}
             <button
               onClick={() => setStep(1)}

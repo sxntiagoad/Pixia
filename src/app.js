@@ -8,6 +8,7 @@ import imageRoutes from './routes/image.routes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import promptRoutes from './routes/prompt.routes.js';
+import templateRoutes from './routes/template.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ app.use(cookieParser()); //parse cookies
 app.use("/api/images", imageRoutes); //use image routes
 app.use("/api", authRoutes); //use auth routes
 app.use('/api/prompts', promptRoutes); //use prompt routes
+app.use('/api/templates', templateRoutes);
 
 // Servir archivos estáticos en producción
 if (process.env.NODE_ENV === 'production') {

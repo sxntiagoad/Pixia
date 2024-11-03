@@ -17,9 +17,10 @@ function App() {
           <Route path="/login" element={ <LoginPage/> } />
           <Route path="/register" element={ <RegisterPage/> } />
           <Route path='/' element={ <LandingPage/> }/>
+          <Route path="/historial-vacantes" element={<VacancyHistoryPage />} />
           <Route element={<ProtectedRoute />}>
             <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
-            <Route path="/historial-vacantes" element={<VacancyHistoryPage />} />
+            
             {/* <Route path="/BuildVacancyPage" element={<BuildVacancyPage />} /> */}
           </Route>
         </Routes>  

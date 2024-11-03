@@ -28,17 +28,25 @@ export class TemplateRegistry {
         
         try {
             const templatePaths = await fg('../../controllers/templates/*.js', { cwd: __dirname });
+            console.log('Templates encontrados:', templatePaths);
             
             for (const path of templatePaths) {
                 if (path.includes('t_') && path.endsWith('.js')) {
                     const templateName = path.split('/').pop().replace('.js', '');
-                    const { default: Template } = await import(`../../controllers/templates/${templateName}.js`);
-                    console.log(`Registrando plantilla ${templateName}`);
-                    this.register(templateName, Template);
+                    console.log(`Intentando cargar template: ${templateName}`);
+                    
+                    try {
+                        const { default: Template } = await import(`../../controllers/templates/${templateName}.js`);
+                        console.log(`Template ${templateName} cargado correctamente`);
+                        this.register(templateName, Template);
+                        console.log(`Template ${templateName} registrado exitosamente`);
+                    } catch (error) {
+                        console.error(`Error al cargar template ${templateName}:`, error);
+                    }
                 }
             }
             
-            console.log('Registro de plantillas completado');
+            console.log('Templates registrados:', Array.from(this.templates.keys()));
         } catch (error) {
             console.error('Error al registrar plantillas:', error);
             throw error;
