@@ -16,11 +16,31 @@ export default class Template1 extends Template {
             applyNowFont: 'bold 35px Arial, sans-serif',   // Fuente para "Aplica ahora"
             titleColor: '#000000',                         // Color negro para el título
             subtitleColor: '#FFFFFF',
-            
+            shadow: {
+                blur: 4,
+                offset: 2
+            }
         };
 
+        this.setupShadow(style.shadow);
+
+        const containerKeys = Object.keys(TEXT_CONTAINERS);
+        const randomKey = containerKeys[Math.floor(Math.random() * containerKeys.length)];
+        const randomContainer = TEXT_CONTAINERS[randomKey];
+        randomContainer(this.ctx, this.width, this.height);
+
+        // Cargar y dibujar la imagen desde S3
+        await this.drawImageFromS3(bucketName, imageKey);
+
+        this.drawBottomBar();
+
+        this.drawTitle(title, style);
+        this.drawRequirements(requirements, style);
+        this.drawDescription(description, style);
+    }
+
+    async drawImageFromS3(bucketName, imageKey) {
         try {
-            this.ctx.save();
             const imageBuffer = await loadImageFromS3(bucketName, imageKey);
             const templateImage = await loadImage(imageBuffer);
             this.ctx.globalCompositeOperation = 'source-over';
