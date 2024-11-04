@@ -1,5 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { TOKEN_SECRET } from "../config.js";
 import { createAccessToken } from "../libs/jwt.js";
 export const register = async (req, res) => {
     const { username, email, password } = req.body; //get user data from request
@@ -44,7 +46,8 @@ export const login = async (req, res) => {
       if (!isMatch)
         return res.status(400).json({ message: "Incorrect password" }); //return error if password is incorrect
   
-      const token = await createAccessToken({ id: userFound._id }); //create token
+      const token = await createAccessToken({ id: userFound._id }); //create token\
+      console.log(token);
   
       res.cookie("token", token); //set cookie 
       res.json({ //return user data to client
@@ -64,18 +67,20 @@ export const logout = async (req, res) => {
     return res.sendStatus(200); //return message
 }   
 
-export const profile = async (req, res) => {
-  if (!req.user || !req.user.id) {
-    return res.status(403).json({ message: "No se ha proporcionado un usuario válido" }); // Manejo de error si no hay usuario
-}
+export const verifyToken = async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) return res.send(false);
 
-const userFound = await User.findById(req.user.id);
-if (!userFound) return res.status(400).json({ message: "User not found" }); //return error if user not found
-return res.json({ //return user data to client
-    id: userFound._id,
-    username: userFound.username,
-    email: userFound.email,
-    createdAt: userFound.createdAt,
-    updatedAt: userFound.updatedAt,
-});
+  jwt.verify(token, TOKEN_SECRET, async (error, user) => {
+    if (error) return res.sendStatus(401);
+
+    const userFound = await User.findById(user.id);
+    if (!userFound) return res.sendStatus(401);
+
+    return res.json({
+      id: userFound._id,
+      username: userFound.username,
+      email: userFound.email,
+    });
+  });
 };

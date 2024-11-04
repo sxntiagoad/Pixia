@@ -35,7 +35,6 @@ const ImageGeneratorPage = () => {
 
   useEffect(() => {
     fetchImages();
-    fetchUserProfile();
     fetchTemplates();
   }, []);
 
@@ -125,7 +124,8 @@ const ImageGeneratorPage = () => {
                 title: overlayTitle,
                 requirements: overlayRequirements,
                 description: overlayDescription
-            })
+            }),
+            user.id
         );
 
         console.log("Respuesta del servidor:", response);
@@ -167,17 +167,7 @@ const ImageGeneratorPage = () => {
     }
   };
 
-  const fetchUserProfile = async () => {
-    try {
-      const res = await axios.get('/api/profile', { withCredentials: true });
-      setUser(res.data);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error('Error al obtener el perfil del usuario:', error.response || error);
-      setUser(null);
-      setIsAuthenticated(false);
-    }
-  };
+  
 
   const fetchTemplates = async () => {
     try {

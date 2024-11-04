@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { API_KEY } from '../config.js';
+import { listObjectsFromS3 } from '../s3config.js'
 import Image from '../models/image.model.js';
+import { AWS_BUCKET_NAME, AWS_BUCKET_REGION } from "../s3config.js";
 
 const url = "https://api.segmind.com/v1/flux-realism-lora";
 
@@ -45,7 +47,7 @@ export const generateImage = async (req, res) => {
         const newImage = new Image({ 
           prompt,
           improvedPrompt,
-          imageUrl, // Ahora sí tenemos la URL
+          imageUrl,
           status: 'generated',
           metadata: {
             width: 512,
@@ -100,18 +102,41 @@ export const generateImage = async (req, res) => {
     }
 };
 
+
+export const getProcessedImageUrlsByUserId = async (userId) => {
+  try {
+    console.log('userId recibido:', userId);
+
+    if (!userId) {
+      throw new Error("User ID is required");
+    }
+
+    const images = await Image.find({
+      processedImageUrl: { $regex: `processed/${userId}_` }
+    }).select('processedImageUrl');
+
+    console.log('Resultado directo de la consulta:', images);
+
+    if (images.length === 0) {
+      throw new Error("No images found for the specified user ID");
+    }
+
+    const imageUrls = images.map(image => image.processedImageUrl);
+    console.log('Array de URLs después del mapeo:', imageUrls);
+
+    return imageUrls;
+  } catch (error) {
+    console.error('Error while fetching images:', error);
+    throw error;
+  }
+};
+
 export const getImages = async (req, res) => {
   try {
-    const images = await Image.find()
-      .select('-__v')
-      .sort({ createdAt: -1 })
-      .limit(50);
+    const images = await Image.find().sort({ createdAt: -1 });
     res.status(200).json(images);
   } catch (error) {
     console.error('Error al obtener las imágenes:', error);
-    res.status(500).json({ 
-      mensaje: 'Error al obtener las imágenes', 
-      error: error.message 
-    });
+    res.status(500).json({ mensaje: 'Error al obtener las imágenes', error: error.message });
   }
 };

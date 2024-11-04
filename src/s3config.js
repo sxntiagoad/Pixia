@@ -1,4 +1,4 @@
-import { S3Client } from "@aws-sdk/client-s3";
+import { S3Client, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY } from './config.js';
 
@@ -55,5 +55,19 @@ const loadImageFromS3 = async (bucketName, key) => {
     throw new Error(`Error al cargar la imagen desde S3: ${error.message}`);
   }
 };
+
+export const listObjectsFromS3 = async() => {
+  const params = {
+    Bucket: AWS_BUCKET_NAME,
+    Prefix: 'processed/'
+  };
+  try {
+    const command = new ListObjectsV2Command(params);
+    const data = await s3Client.send(command);
+    return data.Contents;
+  } catch (error) {
+    console.log('Error listing objects from S3:', error);
+  }
+}
 
 export { s3Client, AWS_BUCKET_NAME, uploadToS3, loadImageFromS3, AWS_BUCKET_REGION };

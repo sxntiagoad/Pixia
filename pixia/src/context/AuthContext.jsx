@@ -1,95 +1,101 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import { registerRequest, loginRequest } from '../api/auth';
-import axios from 'axios';
-import Cookie from 'js-cookie';
+import { useEffect } from "react";
+import { createContext, useContext, useState } from "react";
+import { loginRequest, registerRequest, verifyTokenRequest } from "../api/auth";
+import Cookies from "js-cookie";
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-    }
-    return context;
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within a AuthProvider");
+  return context;
 };
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [errors, setErrors] = useState([]);   
+  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [errors, setErrors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    const signup = async (user) => {
-        try {
-            const res = await registerRequest(user);
-            setUser(res.data);
-            setIsAuthenticated(true);
-        } catch (error) {
-            setErrors(error.response.data);
-        }
+  // clear errors after 5 seconds
+  useEffect(() => {
+    if (errors.length > 0) {
+      const timer = setTimeout(() => {
+        setErrors([]);
+      }, 5000);
+      return () => clearTimeout(timer);
     }
+  }, [errors]);
 
-    const signin = async (user) => {
-        try {
-            const res = await loginRequest(user);
-            setUser(res.data);
-            setIsAuthenticated(true);
-        } catch (error) {
-            if(Array.isArray(error.response.data)){
-                return setErrors(error.response.data);
-            }
-            setErrors([error.response.data.message]);
-        }
+  const signup = async (user) => {
+    try {
+      const res = await registerRequest(user);
+      if (res.status === 200) {
+        setUser(res.data);
+        setIsAuthenticated(true);
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      setErrors(error.response.data.message);
     }
+  };
 
-    const logout = async () => {
-        try {
-            await axios.post('/api/logout', {}, { withCredentials: true });
-            setUser(null);
-            setIsAuthenticated(false);
-            Cookie.remove('token');
-        } catch (error) {
-            console.error("Error al cerrar sesión:", error);
-        }
+  const signin = async (user) => {
+    try {
+      const res = await loginRequest(user);
+      setUser(res.data);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.log(error);
+      // setErrors(error.response.data.message);
     }
+  };
 
-    const fetchUserProfile = async () => {
-        try {
-            const res = await axios.get('/api/profile', { withCredentials: true });
-            setUser(res.data);
-            setIsAuthenticated(true);
-        } catch (error) {
-            setUser(null);
-            setIsAuthenticated(false);
-        }
-    }
+  const logout = () => {
+    Cookies.remove("token");
+    setUser(null);
+    setIsAuthenticated(false);
+  };
 
-    useEffect(() => {
-        const token = Cookie.get('token');
-        if (token) {
-            fetchUserProfile();
-        }
-    }, []);
+  useEffect(() => {
+    const checkLogin = async () => {
+      const cookies = Cookies.get();
+      if (!cookies.token) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
+      }
 
-    useEffect(() => {
-        if(errors.length > 0) {
-            const timer = setTimeout(() => {
-                setErrors([]);
-            }, 4500);
-            return () => clearTimeout(timer);
-        }
-    }, [errors]);
+      try {
+        const res = await verifyTokenRequest(cookies.token);
+        console.log(res);
+        if (!res.data) return setIsAuthenticated(false);
+        setIsAuthenticated(true);
+        setUser(res.data);
+        setLoading(false);
+      } catch (error) {
+        setIsAuthenticated(false);
+        setLoading(false);
+      }
+    };
+    checkLogin();
+  }, []);
 
-    return (
-        <AuthContext.Provider value={{
-            signup,
-            signin,
-            logout,
-            user,
-            isAuthenticated,
-            errors,
-            setUser, // Asegúrate de incluir setUser aquí
-        }}>
-            {children}
-        </AuthContext.Provider>
-    )
-}
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        signup,
+        signin,
+        logout,
+        isAuthenticated,
+        errors,
+        loading,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export default AuthContext;
