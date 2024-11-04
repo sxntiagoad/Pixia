@@ -8,7 +8,11 @@ const ImageList = ({ images, isLoading }) => (
     ) : images.length > 0 ? (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {images.map((image, index) => (
-          <div key={index} className="bg-gray-800 rounded-lg overflow-hidden shadow-md">
+          <div 
+            key={index} 
+            className="bg-gray-800 rounded-lg overflow-hidden shadow-md opacity-0 animate-fade-in"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
             <div className="w-full h-0 pb-[100%] relative">
               <img 
                 src={image.imageUrl} 
@@ -21,7 +25,7 @@ const ImageList = ({ images, isLoading }) => (
         ))}
       </div>
     ) : (
-      <p className="text-gray-400">No hay imágenes generadas anteriormente.</p>
+      <p className="text-gray-400"></p>
     )}
   </div>
 );

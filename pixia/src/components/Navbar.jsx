@@ -19,9 +19,8 @@ const Navbar = () => {
           <img src={pixiaLogo} alt="Pixia Logo" className="h-10 w-auto mr-2" />
         </Link>
         <Link to="/" className="text-gray-300 hover:text-green-400 transition duration-300">Inicio</Link>
-        <Link to="/crear-vacante" className="text-gray-300 hover:text-green-400 transition duration-300">Crear Vacante</Link>
+        <Link to="/ImageGeneratorPage" className="text-gray-300 hover:text-green-400 transition duration-300">Crear Vacante</Link>
         <Link to="/historial-vacantes" className="text-gray-300 hover:text-green-400 transition duration-300">Vacantes</Link>
-        <Link to="/ajustes" className="text-gray-300 hover:text-green-400 transition duration-300">Ajustes</Link>
       </div>
       <div className="flex items-center space-x-4">
         {isAuthenticated ? (
