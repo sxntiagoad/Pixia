@@ -103,12 +103,14 @@ export const generateImage = async (req, res) => {
 };
 
 
-export const getProcessedImageUrlsByUserId = async (userId) => {
+export const getProcessedImageUrlsByUserId = async (req, res) => {
   try {
+    console.log(`userId recibido: ${req.params.userId}`);
+    const { userId } = req.params;
     console.log('userId recibido:', userId);
 
     if (!userId) {
-      throw new Error("User ID is required");
+      return res.status(400).json({ message: "User ID is required" });
     }
 
     const images = await Image.find({
@@ -118,16 +120,16 @@ export const getProcessedImageUrlsByUserId = async (userId) => {
     console.log('Resultado directo de la consulta:', images);
 
     if (images.length === 0) {
-      throw new Error("No images found for the specified user ID");
+      return res.status(404).json({ message: "No images found for the specified user ID" });
     }
 
     const imageUrls = images.map(image => image.processedImageUrl);
     console.log('Array de URLs después del mapeo:', imageUrls);
 
-    return imageUrls;
+    return res.status(200).json(imageUrls);
   } catch (error) {
     console.error('Error while fetching images:', error);
-    throw error;
+    return res.status(500).json({ message: error.message });
   }
 };
 

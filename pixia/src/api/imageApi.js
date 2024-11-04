@@ -9,6 +9,16 @@ export const generateImageApi = async (prompt) => {
   }
 };
 
+export const getProcessedImageUrlsByUserId = async (userId) => {
+  try {
+    const response = await axios.get(`/images/get-images/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching processed images:', error);
+    throw error;
+  }
+};
+
 export const processImageApi = (imageUrl, overlayText, prompt, templateName) => {
   return axios.post('/images/process-image', { 
     imageUrl, 

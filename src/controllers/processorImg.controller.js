@@ -1,6 +1,5 @@
 import { createCanvas, loadImage } from "canvas";
 import { uploadToS3, AWS_BUCKET_NAME } from "../s3config.js";
-import {getProcessedImageUrlsByUserId} from "./image.controller.js";
 import templateRegistry from "../core/templateRegistry/TemplateRegistry.js";
 import Image from "../models/image.model.js";
 
@@ -113,7 +112,6 @@ export const uploadSelectedImage = async (req, res) => {
         const buffer = Buffer.from(imageData, 'base64');
         const fileName = `processed/${userId}_${Date.now()}.png`;
         const processedImageUrl = await uploadToS3(buffer, fileName, 'image/png');
-        const urlsGenerated = await getProcessedImageUrlsByUserId(userId);
         const updatedImage = await Image.findOneAndUpdate(
             { imageUrl: originalImageUrl }, // Criterio de búsqueda basado en imageUrl
             {

@@ -8,6 +8,6 @@ router.post("/generate-image", generateImage);
 router.post("/process-image", processImage);
 router.get("/", getImages);
 router.post("/upload-variation", uploadSelectedImage);
-router.post("/get-images", getProcessedImageUrlsByUserId);
+router.get("/get-images/:userId", getProcessedImageUrlsByUserId);
 
 export default router;
