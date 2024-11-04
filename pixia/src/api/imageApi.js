@@ -18,13 +18,14 @@ export const processImageApi = (imageUrl, overlayText, prompt, templateName) => 
   });
 };
 
-export const uploadSelectedImageApi = async (selectedImageId, imageData, prompt, originalImageUrl, overlayText) => {
+export const uploadSelectedImageApi = async (selectedImageId, imageData, prompt, originalImageUrl, overlayText, userId) => {
   return axios.post('/images/upload-variation', {
     selectedImageId,
     imageData,
     prompt,
     originalImageUrl,
-    overlayText
+    overlayText,
+    userId
   });
 };
 

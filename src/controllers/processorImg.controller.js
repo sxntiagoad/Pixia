@@ -107,24 +107,29 @@ export const processImage = async (req, res) => {
 
 export const uploadSelectedImage = async (req, res) => {
     try {
-        const { selectedImageId, imageData, prompt, originalImageUrl, overlayText } = req.body;
-
+        const { selectedImageId, imageData, prompt, originalImageUrl, overlayText, userId } = req.body;
+        console.log('userid', userId);
         const buffer = Buffer.from(imageData, 'base64');
-        const fileName = `processed/${Date.now()}_selected_${selectedImageId}.png`;
+        const fileName = `processed/${userId}_${Date.now()}_selected_${selectedImageId}.png`;
         const processedImageUrl = await uploadToS3(buffer, fileName, 'image/png');
 
-        const newImage = new Image({
-            prompt,
-            imageUrl: originalImageUrl,
-            processedImageUrl,
-            overlayText,
-            status: 'processed'
-        });
-        await newImage.save();
+        const updatedImage = await Image.findOneAndUpdate(
+            { imageUrl: originalImageUrl }, // Criterio de búsqueda basado en imageUrl
+            {
+                prompt,
+                processedImageUrl,
+                overlayText,
+            },
+            { new: true } // Retorna el documento actualizado
+        );
+
+        if (!updatedImage) {
+            return res.status(404).json({ error: 'Imagen no encontrada' });
+        }
 
         res.json({ 
             processedImageUrl, 
-            imageId: newImage._id 
+            imageId: updatedImage._id
         });
     } catch (error) {
         res.status(500).json({ 
