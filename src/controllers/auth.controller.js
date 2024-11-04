@@ -8,7 +8,9 @@ export const register = async (req, res) => {
     try { //try to register new user
 
       const userFound = await User.findOne({email})
-      if (userFound) return res.status(400).json(["the email is already in use"] ); //return error if email already exists
+      if (userFound) return res.status(400).json({ 
+        message: ["El correo electrónico ya está en uso"] 
+      }); //return error if email already exists
 
         const passwordHash = await bcrypt.hash(password, 10); //encrypt password
         const newUser = new User({ //create new user
@@ -31,7 +33,9 @@ export const register = async (req, res) => {
 
     } catch (error) { //catch any errors
         console.log(error);
-        res.status(500).send({ message: "Error registering user" }); //return error message
+        res.status(500).json({ 
+          message: ["Error al registrar usuario. Por favor, intente nuevamente."] 
+        }); //return error message
     }
 }; //register new user
 
@@ -40,11 +44,15 @@ export const login = async (req, res) => {
   
     try {
       const userFound = await User.findOne({ email }); //find user by email
-      if (!userFound) return res.status(400).json({ message: "User not found" });   //return error if user not found
+      if (!userFound) return res.status(400).json({ 
+        message: ["Usuario no encontrado"] 
+      });   //return error if user not found
   
       const isMatch = await bcrypt.compare(password, userFound.password); //compare password
       if (!isMatch)
-        return res.status(400).json({ message: "Incorrect password" }); //return error if password is incorrect
+        return res.status(400).json({ 
+          message: ["Contraseña incorrecta"] 
+        }); //return error if password is incorrect
   
       const token = await createAccessToken({ id: userFound._id }); //create token\
       console.log(token);
@@ -58,7 +66,9 @@ export const login = async (req, res) => {
         updatedAt: userFound.updatedAt,
       });
     } catch (error) {
-      res.status(500).json({ message: error.message }); //return error message
+      res.status(500).json({ 
+        message: ["Error en el servidor. Por favor, intente nuevamente."] 
+      }); //return error message
     }
 };
 

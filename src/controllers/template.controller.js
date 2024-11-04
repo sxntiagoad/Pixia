@@ -5,9 +5,13 @@ import { createCanvas, loadImage } from 'canvas';
 export const getTemplates = async (req, res) => {
     try {
         console.log('Obteniendo templates...');
-        const templates = Array.from(templateRegistry.templates.keys());
-        console.log('Templates disponibles:', templates);
-        res.json({ templates });
+        const templatesWithPreviews = Array.from(templateRegistry.templates.entries()).map(([key, TemplateClass]) => ({
+            id: key,
+            previewUrl: TemplateClass.previewUrl
+        }));
+
+        console.log('Templates disponibles:', templatesWithPreviews);
+        res.json({ templates: templatesWithPreviews });
     } catch (error) {
         console.error('Error al obtener templates:', error);
         res.status(500).json({ message: 'Error al obtener templates' });

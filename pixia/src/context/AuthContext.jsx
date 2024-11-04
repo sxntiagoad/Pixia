@@ -35,8 +35,15 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       }
     } catch (error) {
-      console.log(error.response.data);
-      setErrors(error.response.data.message);
+      if (error.response && error.response.data) {
+        if (Array.isArray(error.response.data.message)) {
+          setErrors(error.response.data.message);
+        } else {
+          setErrors([error.response.data.message]);
+        }
+      } else {
+        setErrors(['Error al registrarse. Por favor, intente nuevamente.']);
+      }
     }
   };
 
@@ -46,8 +53,15 @@ export const AuthProvider = ({ children }) => {
       setUser(res.data);
       setIsAuthenticated(true);
     } catch (error) {
-      console.log(error);
-      // setErrors(error.response.data.message);
+      if (error.response && error.response.data) {
+        if (Array.isArray(error.response.data.message)) {
+          setErrors(error.response.data.message);
+        } else {
+          setErrors([error.response.data.message]);
+        }
+      } else {
+        setErrors(['Error al iniciar sesión. Por favor, intente nuevamente.']);
+      }
     }
   };
 

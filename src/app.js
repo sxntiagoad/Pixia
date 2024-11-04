@@ -9,6 +9,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import promptRoutes from './routes/prompt.routes.js';
 import templateRoutes from './routes/template.routes.js';
+import vacancyRoutes from './routes/vacancy.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,6 +30,7 @@ app.use("/api/images", imageRoutes); //use image routes
 app.use("/api", authRoutes); //use auth routes
 app.use('/api/prompts', promptRoutes); //use prompt routes
 app.use('/api/templates', templateRoutes);
+app.use('/api', vacancyRoutes);
 
 // Servir archivos estáticos en producción
 if (process.env.NODE_ENV === 'production') {

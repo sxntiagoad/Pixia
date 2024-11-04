@@ -5,3 +5,24 @@
 style{
     background: #202020;
 }
+.template-swiper {
+    padding: 20px 10px;
+  }
+  
+  .template-swiper .swiper-button-next,
+  .template-swiper .swiper-button-prev {
+    color: #fff;
+  }
+  
+  .template-swiper .swiper-pagination-bullet {
+    background: #fff;
+  }
+  
+  .template-swiper .swiper-pagination-bullet-active {
+    background: #6366f1;
+  }
+  
+  .swiper-slide {
+    display: flex;
+    justify-content: center;
+  }

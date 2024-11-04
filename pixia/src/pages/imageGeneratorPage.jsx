@@ -11,6 +11,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaImage, FaEdit, FaMagic, FaCheck, FaFileAlt } from 'react-icons/fa';
 import StepIndicator from '../components/StepIndicator';
 import { getTemplatesApi, processWithTemplateApi } from '../api/templateApi';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 const ImageGeneratorPage = () => {
   const { logout, user, setUser } = useAuth();
@@ -32,6 +37,7 @@ const ImageGeneratorPage = () => {
   const [step, setStep] = useState(1);
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState('t_default');
+  const [autoMode, setAutoMode] = useState(false);
 
   useEffect(() => {
     fetchImages();
@@ -167,17 +173,15 @@ const ImageGeneratorPage = () => {
     }
   };
 
-  
-
   const fetchTemplates = async () => {
     try {
       const response = await getTemplatesApi();
       console.log('Templates recibidos:', response.data);
       if (response.data && response.data.templates) {
         setTemplates(response.data.templates);
-        // Si no hay template seleccionado, seleccionar el default
-        if (!selectedTemplate && response.data.templates.includes('t_default')) {
-          setSelectedTemplate('t_default');
+        // Si no hay template seleccionado, seleccionar el primero de la lista
+        if (!selectedTemplate && response.data.templates.length > 0) {
+          setSelectedTemplate(response.data.templates[0].id);
         }
       }
     } catch (error) {
@@ -206,20 +210,31 @@ const ImageGeneratorPage = () => {
     setError('');
   };
 
-  const nextStep = () => {
-    setStep(step + 1);
-  };
-
-  const prevStep = () => {
-    setStep(step - 1);
-  };
-
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
           <>
             <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 1: Elegir Plantilla</h2>
+            <div className="flex items-center justify-end">
+              <label className="flex items-center cursor-pointer">
+                <span className="mr-3 text-sm font-medium text-gray-300">Modo Automático</span>
+                <div className="relative">
+                  <input
+                    type="checkbox"
+                    className="sr-only"
+                    checked={autoMode}
+                    onChange={() => setAutoMode(!autoMode)}
+                  />
+                  <div className={`block w-14 h-8 rounded-full transition-colors duration-300 ${
+                    autoMode ? 'bg-green-500' : 'bg-gray-600'
+                  }`}></div>
+                  <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform duration-300 ${
+                    autoMode ? 'transform translate-x-6' : ''
+                  }`}></div>
+                </div>
+              </label>
+            </div>
             <div className="mb-4">
               <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">Formato</label>
               <select
@@ -228,26 +243,63 @@ const ImageGeneratorPage = () => {
                 onChange={(e) => setSelectedFormat(e.target.value)}
                 className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="LINKEDIN_POST">LinkedIn Post</option>
-                <option value="INSTAGRAM_POST">Instagram Post</option>
-                <option value="INSTAGRAM_STORY">Instagram Story</option>
-                <option value="FACEBOOK_POST">Facebook Post</option>
+                <option value="NORMAL_POST">Normal Post</option>
+                <option value="STORIES_POST">Story Post</option>
               </select>
             </div>
             <div className="mb-4">
-              <label htmlFor="template" className="block text-sm font-medium text-gray-300 mb-2">Template</label>
-              <select
-                id="template"
-                value={selectedTemplate}
-                onChange={(e) => setSelectedTemplate(e.target.value)}
-                className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              <label className="block text-sm font-medium text-gray-300 mb-2">Selecciona una Plantilla</label>
+              <Swiper
+                modules={[Navigation, Pagination]}
+                spaceBetween={20}
+                slidesPerView={6}
+                navigation
+                pagination={{ clickable: true }}
+                className="template-swiper"
+                breakpoints={{
+                  // cuando el ancho de ventana es >= 320px
+                  320: {
+                    slidesPerView: 1,
+                    spaceBetween: 10
+                  },
+                  // cuando el ancho de ventana es >= 480px
+                  480: {
+                    slidesPerView: 2,
+                    spaceBetween: 15
+                  },
+                  // cuando el ancho de ventana es >= 640px
+                  640: {
+                    slidesPerView: 3,
+                    spaceBetween: 20
+                  }
+                }}
               >
                 {templates.map(template => (
-                  <option key={template} value={template}>
-                    {template}
-                  </option>
+                  <SwiperSlide key={template.id}>
+                    <div
+                      onClick={() => setSelectedTemplate(template.id)}
+                      className={`cursor-pointer rounded-lg overflow-hidden transition-all duration-300 ${
+                        selectedTemplate === template.id 
+                          ? 'ring-4 ring-indigo-500 transform scale-105' 
+                          : 'hover:ring-2 hover:ring-indigo-400 hover:scale-102'
+                      }`}
+                    >
+                      <div className="relative w-64 mx-auto"> {/* Ancho fijo más pequeño */}
+                        <img 
+                          src={template.previewUrl} 
+                          alt={`Template ${template.id}`}
+                          className="w-full h-40 object-cover" /* Altura más pequeña */
+                        />
+                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
+                          <p className="text-white text-center text-sm font-medium">
+                            {template.id}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </SwiperSlide>
                 ))}
-              </select>
+              </Swiper>
             </div>
             <button
               onClick={() => setStep(2)}

@@ -4,6 +4,8 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template1 extends Template {
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.amazonaws.com/templates/plantilla1.png';
+
     static DEFAULT_STYLE = {
         presetFont: 'bold 80px Arial, sans-serif',
         titleFont: 'bold 30px Arial, sans-serif',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import pixiaLogo from '../assets/pixia.png'; // Asegúrate de que la ruta sea correcta
+import pixiaLogo from '../assets/pixia.png';
 
 const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -18,10 +18,21 @@ const Navbar = () => {
         <Link to="/" className="flex items-center">
           <img src={pixiaLogo} alt="Pixia Logo" className="h-10 w-auto mr-2" />
         </Link>
-        <Link to="/" className="text-gray-300 hover:text-green-400 transition duration-300">Inicio</Link>
-        <Link to="/ImageGeneratorPage" className="text-gray-300 hover:text-green-400 transition duration-300">Crear Vacante</Link>
-        <Link to="/historial-vacantes" className="text-gray-300 hover:text-green-400 transition duration-300">Vacantes</Link>
+        {isAuthenticated && (
+          <>
+            <Link to="/" className="text-gray-300 hover:text-green-400 transition duration-300">
+              Inicio
+            </Link>
+            <Link to="/ImageGeneratorPage" className="text-gray-300 hover:text-green-400 transition duration-300">
+              Crear Post
+            </Link>
+            <Link to="/historial-vacantes" className="text-gray-300 hover:text-green-400 transition duration-300">
+              Post Generados
+            </Link>
+          </>
+        )}
       </div>
+      
       <div className="flex items-center space-x-4">
         {isAuthenticated ? (
           <>
@@ -32,7 +43,7 @@ const Navbar = () => {
               Cerrar sesión
             </button>
             <div className="w-10 h-10 bg-gray-700 rounded-full overflow-hidden">
-              {/* Aquí puedes agregar la imagen del usuario si está disponible */}
+              {/* Avatar del usuario */}
             </div>
           </>
         ) : (
