@@ -90,7 +90,7 @@ const generateVacancyTexts = async (title, description, requirements) => {
     messages: [
       {
         role: "user",
-        content: `Generate a compelling job posting title and two brief texts based on these job details:
+        content: ` THE TEXT HAVE TO BE ON SPANISH Generate a compelling job posting title and two brief texts based on these job details:
 
         Original Title: ${title}
         Description: ${description}
@@ -98,8 +98,8 @@ const generateVacancyTexts = async (title, description, requirements) => {
 
         Rules:
         1. Generate these 3 elements:
-           - An attention-grabbing job title (max 50 characters)
-           - A brief, engaging description text (max 100 characters)
+           - An attention-grabbing job title (max 30 characters)
+           - A brief, engaging description text (max 50 characters)
            - A concise requirements text (max 100 characters)
         2. The texts should be professional but engaging
         3. Use clear, direct language
@@ -124,13 +124,12 @@ const generateVacancyTexts = async (title, description, requirements) => {
     if (response.data?.content?.[0]?.text) {
       const text = response.data.content[0].text;
       
-      // Extraer los tres elementos usando regex
-      const titleMatch = text.match(/TITLE:\s*(.+)/);
+      
       const text1Match = text.match(/TEXT1:\s*(.+)/);
       const text2Match = text.match(/TEXT2:\s*(.+)/);
 
       return {
-        title: titleMatch ? titleMatch[1].trim() : '',
+        title: title,
         text1: text1Match ? text1Match[1].trim() : '',
         text2: text2Match ? text2Match[1].trim() : ''
       };

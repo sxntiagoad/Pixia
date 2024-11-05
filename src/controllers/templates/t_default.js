@@ -47,4 +47,26 @@ export default class DefaultTemplate extends Template {
         this.ctx.fillStyle = style.subtitleColor;
         this.drawTextSection(text, 40, 450, this.width / 2);
     }
+    
+    drawTextSection(text, fontSize, textY, maxWidth) {
+        this.ctx.font = `bold ${fontSize}px Arial, sans-serif`;
+        const words = text.split(' ');
+        let line = '';
+        const textX = 10;
+
+        for (let n = 0; n < words.length; n++) {
+            const testLine = line + words[n] + ' ';
+            const metrics = this.ctx.measureText(testLine);
+            const testWidth = metrics.width;
+            
+            if (testWidth > maxWidth && n > 0) {
+                this.ctx.fillText(line, textX, textY);
+                line = words[n] + ' ';
+                textY += fontSize + 10;
+            } else {
+                line = testLine;
+            }
+        }
+        this.ctx.fillText(line, textX, textY);
+    }
 }

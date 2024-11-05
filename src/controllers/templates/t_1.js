@@ -4,12 +4,12 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template1 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.amazonaws.com/templates/plantilla1.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/plantilla1.png';
 
     static DEFAULT_STYLE = {
-        presetFont: 'bold 80px Arial, sans-serif',
-        titleFont: 'bold 30px Arial, sans-serif',
-        subtitleFont: 'bold 40px Arial, sans-serif',
+        presetFont: 'bold 30px Arial, sans-serif',
+        titleFont: 'bold 80px Arial, sans-serif',
+        subtitleFont: 'bold 28px Arial, sans-serif',
         requirementsFont: '24px Arial, sans-serif',
         applyNowFont: 'bold 35px Arial, sans-serif',
         titleColor: '#000000',
@@ -17,7 +17,8 @@ export default class Template1 extends Template {
         shadow: {
             blur: 4,
             offset: 2
-        }
+        },
+        logoUrl: 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/logo.png'
     };
 
     async draw(texts, bucketName) {
@@ -25,12 +26,6 @@ export default class Template1 extends Template {
         const { title, requirements, description } = texts;
         
         this.setupShadow(Template1.DEFAULT_STYLE.shadow);
-
-        const containerKeys = Object.keys(TEXT_CONTAINERS);
-        const randomKey = containerKeys[Math.floor(Math.random() * containerKeys.length)];
-        const randomContainer = TEXT_CONTAINERS[randomKey];
-        randomContainer(this.ctx, this.width, this.height);
-
         await this.drawImageFromS3(bucketName, imageKey, texts);
     }
 
@@ -45,7 +40,7 @@ export default class Template1 extends Template {
 
             const { title, requirements, description } = texts;
 
-            this.drawBottomBar();
+            await this.drawBottomBar(0.07, Template1.DEFAULT_STYLE.logoUrl);
             this.drawPresetText();
             this.drawApplyNowText();
             this.drawTitle(title);
@@ -63,11 +58,12 @@ export default class Template1 extends Template {
         }
     }
 
+
     drawPresetText() {
         this.ctx.font = Template1.DEFAULT_STYLE.presetFont;
-        this.ctx.fillStyle = '#FFFFFF';
-        this.ctx.fillText("Buscamos", 55, 200);
-        this.ctx.fillText("talento", 55, 290);
+        this.ctx.fillStyle = '#000000';
+        this.ctx.fillText("Buscamos talento", 160, 430 );
+        // this.ctx.fillText("talento", 55, 290);
     }
 
     drawApplyNowText() {
@@ -78,20 +74,19 @@ export default class Template1 extends Template {
 
     drawTitle(text) {
         this.ctx.font = Template1.DEFAULT_STYLE.titleFont;
-        this.ctx.fillStyle = Template1.DEFAULT_STYLE.titleColor;
-        this.drawTextSection(text, 125, 430, this.width);
+        this.ctx.fillStyle = '#FFFFFF';
+        this.drawTextSection(text, 20, 180, this.width/2, Template1.DEFAULT_STYLE.titleFont);
     }
 
     drawRequirements(text) {
         this.ctx.font = Template1.DEFAULT_STYLE.subtitleFont;
         this.ctx.fillStyle = Template1.DEFAULT_STYLE.subtitleColor;
-        this.drawTextSection(text, 55, 600, this.width);
+        this.drawTextSection(text, 20, 590, this.width*0.50, Template1.DEFAULT_STYLE.presetFont);
     }
 
     drawDescription(text) {
         this.ctx.font = Template1.DEFAULT_STYLE.requirementsFont;
         this.ctx.fillStyle = Template1.DEFAULT_STYLE.subtitleColor;
-        this.drawTextSection(text, 70, 960, this.width);
+        this.drawTextSection(text, 20, 900, this.width/2, Template1.DEFAULT_STYLE.presetFont);
     }
-
 }
