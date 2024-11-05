@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import ImageForm from '../components/ImageForm';
 import ImagePreview from '../components/ImagePreview';
 import ImageList from '../components/ImageList';
+import { getVacanciesApi, generateVacancyTextsApi, generateVacancyPromptApi } from '../api/vacancy';
 import { generateImageApi, fetchImagesApi, processImageApi, uploadSelectedImageApi } from '../api/imageApi';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
@@ -38,10 +39,13 @@ const ImageGeneratorPage = () => {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState('t_default');
   const [autoMode, setAutoMode] = useState(false);
+  const [vacancies, setVacancies] = useState([]);
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
 
   useEffect(() => {
     fetchImages();
     fetchTemplates();
+    fetchVacancies();
   }, []);
 
   const generateImage = async () => {
@@ -173,6 +177,16 @@ const ImageGeneratorPage = () => {
     }
   };
 
+  const fetchVacancies = async () => {
+    try {
+      const data = await getVacanciesApi();
+      setVacancies(data);
+    } catch (error) {
+      console.error('Error al obtener vacantes:', error);
+      setError('Error al cargar las vacantes');
+    }
+  };
+
   const fetchTemplates = async () => {
     try {
       const response = await getTemplatesApi();
@@ -210,13 +224,69 @@ const ImageGeneratorPage = () => {
     setError('');
   };
 
+  const handleAutomaticProcess = async () => {
+    if (!selectedTemplate) {
+      setError('Por favor seleccione una plantilla');
+      return;
+    }
+
+    if (!selectedVacancy) {
+      setError('Por favor seleccione una vacante');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // 1. Generar el prompt y los textos automáticamente
+      const { generatedTexts } = await generateVacancyTextsApi(selectedVacancy);
+
+      // 2. Generar la imagen con el prompt
+      const { prompt: generatedPrompt } = await generateVacancyPromptApi(generatedTexts);
+
+      // 3. Generar la imagen
+      const imageResponse = await generateImageApi(generatedPrompt);
+      const generatedImageUrl = imageResponse.data.imageUrl;
+
+      // 4. Procesar la imagen con el template
+      const processResponse = await processImageApi(
+        generatedImageUrl,
+        JSON.stringify({
+          title: generatedTexts.title,
+          description: generatedTexts.text1,
+          requirements: generatedTexts.text2
+        }),
+        generatedPrompt,
+        selectedTemplate
+      );
+
+      // Actualizar el estado con todos los datos generados
+      setPrompt(generatedPrompt);
+      setOverlayTitle(generatedTexts.title);
+      setOverlayDescription(generatedTexts.text1);
+      setOverlayRequirements(generatedTexts.text2);
+      setImageUrl(generatedImageUrl);
+      setVariations(processResponse.data.variations);
+
+      // Saltar al paso 4
+      setStep(4);
+
+    } catch (error) {
+      console.error('Error en el proceso automático:', error);
+      setError('Error en el proceso automático. Por favor, intente de nuevo.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
           <>
             <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 1: Elegir Plantilla</h2>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end mb-4">
               <label className="flex items-center cursor-pointer">
                 <span className="mr-3 text-sm font-medium text-gray-300">Modo Automático</span>
                 <div className="relative">
@@ -224,7 +294,10 @@ const ImageGeneratorPage = () => {
                     type="checkbox"
                     className="sr-only"
                     checked={autoMode}
-                    onChange={() => setAutoMode(!autoMode)}
+                    onChange={() => {
+                      setAutoMode(!autoMode);
+                      setSelectedVacancy(null); // Resetear la selección al cambiar de modo
+                    }}
                   />
                   <div className={`block w-14 h-8 rounded-full transition-colors duration-300 ${
                     autoMode ? 'bg-green-500' : 'bg-gray-600'
@@ -235,6 +308,31 @@ const ImageGeneratorPage = () => {
                 </div>
               </label>
             </div>
+
+            {/* Selector de vacantes en modo automático */}
+            {autoMode && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Seleccionar Vacante
+                </label>
+                <select
+                  value={selectedVacancy?._id || ''}
+                  onChange={(e) => {
+                    const vacancy = vacancies.find(v => v._id === e.target.value);
+                    setSelectedVacancy(vacancy);
+                  }}
+                  className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="">Seleccione una vacante</option>
+                  {vacancies.map((vacancy) => (
+                    <option key={vacancy._id} value={vacancy._id}>
+                      {vacancy.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <div className="mb-4">
               <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">Formato</label>
               <select
@@ -302,10 +400,11 @@ const ImageGeneratorPage = () => {
               </Swiper>
             </div>
             <button
-              onClick={() => setStep(2)}
+              onClick={autoMode ? handleAutomaticProcess : () => setStep(2)}
+              disabled={isLoading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300"
             >
-              Siguiente
+              {isLoading ? 'Procesando...' : (autoMode ? 'Generar Automáticamente' : 'Siguiente')}
             </button>
           </>
         );
