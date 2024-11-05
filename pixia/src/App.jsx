@@ -5,28 +5,27 @@ import LandingPage from './pages/LandingPage';
 import { AuthProvider } from './context/AuthContext';
 import ImageGeneratorPage from './pages/imageGeneratorPage';
 import VacancyHistoryPage from './pages/PostHistoryPage';
-
+import PostVacancie from './pages/PostVacancie';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
-  console.log("App component is rendering");
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/login" element={ <LoginPage/> } />
-          <Route path="/register" element={ <RegisterPage/> } />
-          <Route path='/' element={ <LandingPage/> }/>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/historial-vacantes" element={<VacancyHistoryPage />} />
+          
           <Route element={<ProtectedRoute />}>
             <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
-            
-            {/* <Route path="/BuildVacancyPage" element={<BuildVacancyPage />} /> */}
+            <Route path="/post-vacancie" element={<PostVacancie />} />
           </Route>
-        </Routes>  
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
 }
 
-export default App;
+export default App; 

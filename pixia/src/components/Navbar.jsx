@@ -29,6 +29,9 @@ const Navbar = () => {
             <Link to="/historial-vacantes" className="text-gray-300 hover:text-green-400 transition duration-300">
               Post Generados
             </Link>
+            <Link to="/post-vacancie" className="text-gray-300 hover:text-green-400 transition duration-300">
+              Crear Vacante
+            </Link>
           </>
         )}
       </div>
