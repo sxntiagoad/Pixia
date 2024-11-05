@@ -5,7 +5,7 @@ import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template1 extends Template {
     static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1730777645507.png';
-    static templateKey = "templates/plantilla1.png";  // Key de la plantilla en S3
+    static templateKey = "templates/plantilla1.png";  // Key de la plantilla en S3 
     static DEFAULT_STYLE = {
         presetFont: 'bold 30px Arial, sans-serif',
         titleFont: 'bold 80px Arial, sans-serif',
