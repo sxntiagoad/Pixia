@@ -63,12 +63,6 @@ export default class Template1 extends Template {
         }
     }
 
-    drawBottomBar(heightPercentage = 0.07) {
-        const barHeight = this.height * heightPercentage;
-        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        this.ctx.fillRect(0, this.height - barHeight, this.width, barHeight);
-    }
-
     drawPresetText() {
         this.ctx.font = Template1.DEFAULT_STYLE.presetFont;
         this.ctx.fillStyle = '#FFFFFF';
@@ -100,28 +94,4 @@ export default class Template1 extends Template {
         this.drawTextSection(text, 70, 960, this.width);
     }
 
-    drawTextSection(text, startX, startY, maxWidth) {
-        const words = text.toString().split(' ');
-        let line = '';
-        let currentY = startY;
-        const lineHeight = parseInt(this.ctx.font) * 1.2;
-        
-        for (let n = 0; n < words.length; n++) {
-            const testLine = line + words[n] + ' ';
-            const metrics = this.ctx.measureText(testLine);
-            const testWidth = metrics.width;
-            
-            if (testWidth > maxWidth && n > 0) {
-                this.ctx.fillText(line.trim(), startX, currentY);
-                line = words[n] + ' ';
-                currentY += lineHeight;
-            } else {
-                line = testLine;
-            }
-        }
-        
-        if (line.trim()) {
-            this.ctx.fillText(line.trim(), startX, currentY);
-        }
-    }
 }

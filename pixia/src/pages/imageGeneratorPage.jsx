@@ -239,12 +239,11 @@ const ImageGeneratorPage = () => {
     setError('');
 
     try {
-      
-      //Generar la imagen con el prompt
-      const { prompt: generatedPrompt } = await generateVacancyPromptApi(generatedTexts);
-
       //Generar el prompt y los textos automáticamente
       const { generatedTexts } = await generateVacancyTextsApi(selectedVacancy);
+
+      //Generar la imagen con el prompt
+      const { prompt: generatedPrompt } = await generateVacancyPromptApi(generatedTexts);
 
       //Generar la imagen
       const imageResponse = await generateImageApi(generatedPrompt);
