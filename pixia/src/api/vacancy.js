@@ -11,6 +11,16 @@ export const getVacanciesApi = async () => {
     }
 };
 
+export const createVacancyApi = async (vacancyData) => {
+    try {
+        const response = await axios.post('/vacancies', vacancyData);
+        return response;
+    } catch (error) {
+        console.error('Error al crear vacante:', error);
+        throw error;
+    }
+};
+
 // Generar textos para la vacante
 export const generateVacancyTextsApi = async (vacancyData) => {
     try {

@@ -2,6 +2,7 @@ import Template from './Template.js';
 import TEXT_CONTAINERS from '../../styles/textContainers.js';
 
 export default class DefaultTemplate extends Template {
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1730779345908.png';
     async draw(texts, bucketName) {
         const { title, requirements, description } = texts;
         
