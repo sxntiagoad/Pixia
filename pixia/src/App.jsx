@@ -20,7 +20,7 @@ function App() {
           
           <Route element={<ProtectedRoute />}>
             <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
-            <Route path="/post-vacancie" element={<PostVacancie />} />
+            <Route path="/post-vacancies" element={<PostVacancie />} />
           </Route>
         </Routes>
       </BrowserRouter>

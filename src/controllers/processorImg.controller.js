@@ -11,39 +11,21 @@ async function generateVariation(variationNumber, imageUrl, texts, templateName)
     const ctx = canvas.getContext('2d');
 
     try {
-        // Dibujar fondo blanco primero
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, width, height);
-
-        // 1. Cargar y dibujar la imagen base (la generada por IA)
+        // Cargar la imagen base (la generada por IA)
         const baseImage = await loadImage(imageUrl);
         
-        // Calcular dimensiones para mantener la proporción
-        const scale = Math.max(width / baseImage.width, height / baseImage.height);
-        const newWidth = baseImage.width * scale;
-        const newHeight = baseImage.height * scale;
-        const x = (width - newWidth) / 2;
-        const y = (height - newHeight) / 2;
-
-        // Dibujar la imagen base
-        ctx.drawImage(baseImage, x, y, newWidth, newHeight);
-
-        // 2. Obtener y aplicar la plantilla
+        // Crear instancia de Template pasando la imagen base
         const Template = templateRegistry.get(templateName);
         if (!Template) {
             throw new Error(`Template ${templateName} no encontrado`);
         }
         
-        // Guardar el estado actual del canvas
-        ctx.save();
+        // Pasar la imagen base al constructor del template
+        const template = new Template(ctx, width, height, baseImage);
         
-        // 3. Crear instancia del template y aplicarlo sobre la imagen base
-        const template = new Template(ctx, width, height);
+        // Aplicar el template
         await template.draw(texts, AWS_BUCKET_NAME);
         
-        // Restaurar el estado del canvas
-        ctx.restore();
-
         return canvas.toBuffer('image/png');
     } catch (error) {
         throw error;

@@ -1,10 +1,11 @@
-import { Image } from 'canvas';
+import { Image, loadImage } from 'canvas';
 
 class Template {
-    constructor(ctx, width, height) {
+    constructor(ctx, width, height, baseImage) {
         this.ctx = ctx;
         this.width = width;
         this.height = height;
+        this.baseImage = baseImage;
     }
 
     setupShadow(shadow) {
@@ -71,6 +72,43 @@ class Template {
             this.ctx.fillText(line, textX, textY);
         } catch (error) {
             console.error('Error al procesar el texto:', error);
+        }
+    }
+
+    async drawBaseImageWithOffset(offsetX, offsetY, backgroundColor) {
+        try {
+            // Limpiar el canvas
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            
+            // Dibujar el fondo
+            this.ctx.fillStyle = backgroundColor;
+            this.ctx.fillRect(0, 0, this.width, this.height);
+            
+            // Calcular dimensiones para mantener la proporción
+            const scale = Math.max(this.width / this.baseImage.width, this.height / this.baseImage.height);
+            const newWidth = this.baseImage.width * scale;
+            const newHeight = this.baseImage.height * scale;
+            const x = (this.width - newWidth) / 2 + offsetX;
+            const y = (this.height - newHeight) / 2 + offsetY;
+            
+            // Dibujar la imagen base con offset
+            this.ctx.drawImage(this.baseImage, x, y, newWidth, newHeight);
+            
+            return true;
+        } catch (error) {
+            console.error('Error al dibujar imagen base con offset:', error);
+            return false;
+        }
+    }
+
+    async drawOverlayImage(imageUrl) {
+        try {
+            const overlayImage = await loadImage(imageUrl);
+            this.ctx.drawImage(overlayImage, 0, 0, this.width, this.height);
+            return true;
+        } catch (error) {
+            console.error('Error al dibujar imagen de overlay:', error);
+            return false;
         }
     }
 }

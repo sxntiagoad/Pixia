@@ -3,54 +3,65 @@ import TEXT_CONTAINERS from '../../styles/textContainers.js';
 
 export default class DefaultTemplate extends Template {
     static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1730779345908.png';
-    async draw(texts, bucketName) {
+    static DEFAULT_STYLE = {
+        titleFont: 'bold 110px Montserrat, sans-serif',
+        titleColor: '#FFFFFF',
+        subtitleFont: 'bold 40px Arial, sans-serif',
+        subtitleColor: '#FFFFFF',
+        shadow: {
+            blur: 5,
+            offset: 2
+        }
+    };
+
+    async draw(texts) {
         const { title, requirements, description } = texts;
         
-        const style = {
-            titleFont: 'bold 110px Montserrat, sans-serif',
-            titleColor: '#FFFFFF',
-            subtitleFont: 'bold 40px Arial, sans-serif',
-            subtitleColor: '#FFFFFF',
-            shadow: {
-                blur: 5,
-                offset: 2
-            }
-        };
+        // 1. Primero dibujar la imagen base con offset
+        await this.drawBaseImageWithOffset(
+            50,  // offset X
+            0,   // offset Y
+            '#FFFFFF'  // color de fondo
+        );
 
-        this.setupShadow(style.shadow);
+        // 2. Configurar sombras y contenedor de texto
+        this.setupShadow(DefaultTemplate.DEFAULT_STYLE.shadow);
 
+        // 3. Dibujar contenedor aleatorio
         const containerKeys = Object.keys(TEXT_CONTAINERS);
         const randomKey = containerKeys[Math.floor(Math.random() * containerKeys.length)];
         const randomContainer = TEXT_CONTAINERS[randomKey];
         randomContainer(this.ctx, this.width, this.height);
 
+        // 4. Dibujar barra inferior
         await this.drawBottomBar(0.07);
 
-        this.drawTitle(title, style);
-        this.drawRequirements(requirements, style);
-        this.drawDescription(description, style);
+        // 5. Dibujar textos
+        this.drawTitle(title);
+        this.drawRequirements(requirements);
+        this.drawDescription(description);
     }
 
-    drawTitle(text, style) {
-        this.ctx.font = style.titleFont;
-        this.ctx.fillStyle = style.titleColor;
+    drawTitle(text) {
+        this.ctx.font = DefaultTemplate.DEFAULT_STYLE.titleFont;
+        this.ctx.fillStyle = DefaultTemplate.DEFAULT_STYLE.titleColor;
         this.drawTextSection(text, 60, 110, this.width / 2);
     }
 
-    drawRequirements(text, style) {
-        this.ctx.font = style.subtitleFont;
-        this.ctx.fillStyle = style.subtitleColor;
+    drawRequirements(text) {
+        this.ctx.font = DefaultTemplate.DEFAULT_STYLE.subtitleFont;
+        this.ctx.fillStyle = DefaultTemplate.DEFAULT_STYLE.subtitleColor;
         this.drawTextSection(text, 40, 380, this.width / 2);
     }
 
-    drawDescription(text, style) {
-        this.ctx.font = style.subtitleFont;
-        this.ctx.fillStyle = style.subtitleColor;
+    drawDescription(text) {
+        this.ctx.font = DefaultTemplate.DEFAULT_STYLE.subtitleFont;
+        this.ctx.fillStyle = DefaultTemplate.DEFAULT_STYLE.subtitleColor;
         this.drawTextSection(text, 40, 700, this.width / 2);
     }
 
     drawTextSection(text, fontSize, textY, maxWidth) {
-        const words = text.split(' ');
+        const words = text.toString().split(' ');
         let line = '';
         const textX = 10;
 

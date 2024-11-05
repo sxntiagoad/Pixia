@@ -5,7 +5,7 @@ import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template1 extends Template {
     static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1730777645507.png';
-
+    static templateKey = "templates/plantilla1.png";  // Key de la plantilla en S3
     static DEFAULT_STYLE = {
         presetFont: 'bold 30px Arial, sans-serif',
         titleFont: 'bold 80px Arial, sans-serif',
@@ -22,42 +22,33 @@ export default class Template1 extends Template {
     };
 
     async draw(texts, bucketName) {
-        const imageKey = "templates/plantilla1.png";
         const { title, requirements, description } = texts;
         
-        this.setupShadow(Template1.DEFAULT_STYLE.shadow);
-        await this.drawImageFromS3(bucketName, imageKey, texts);
-    }
+        // 1. Primero dibujar la imagen base con offset
+        await this.drawBaseImageWithOffset(
+            200,  // offset X
+            0,   // offset Y
+            '#000000'  // color de fondo
+        );
 
-    async drawImageFromS3(bucketName, imageKey, texts) {
+        // 2. Cargar y dibujar la plantilla desde S3
         try {
-            const imageBuffer = await loadImageFromS3(bucketName, imageKey);
-            const templateImage = await loadImage(imageBuffer);
-            
-            this.ctx.save();
-            this.ctx.globalCompositeOperation = 'source-over';
+            const templateBuffer = await loadImageFromS3(bucketName, Template1.templateKey);
+            const templateImage = await loadImage(templateBuffer);
             this.ctx.drawImage(templateImage, 0, 0, this.width, this.height);
-
-            const { title, requirements, description } = texts;
-
-            await this.drawBottomBar(0.07, Template1.DEFAULT_STYLE.logoUrl);
-            this.drawPresetText();
-            this.drawApplyNowText();
-            this.drawTitle(title);
-            this.drawRequirements(requirements);
-            this.drawDescription(description);
-
-            this.ctx.restore();
         } catch (error) {
-            console.error('Error en Template1:', error);
-            this.drawPresetText();
-            this.drawApplyNowText();
-            this.drawTitle(title);
-            this.drawRequirements(requirements);
-            this.drawDescription(description);
+            console.error('Error al cargar la plantilla:', error);
         }
-    }
 
+        // 3. Finalmente dibujar textos y otros elementos
+        this.setupShadow(Template1.DEFAULT_STYLE.shadow);
+        await this.drawBottomBar(0.07);
+        this.drawPresetText();
+        this.drawApplyNowText();
+        this.drawTitle(title);
+        this.drawRequirements(requirements);
+        this.drawDescription(description);
+    }
 
     drawPresetText() {
         this.ctx.font = Template1.DEFAULT_STYLE.presetFont;
