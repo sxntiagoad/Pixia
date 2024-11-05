@@ -119,15 +119,11 @@ export const getProcessedImageUrlsByUserId = async (req, res) => {
             processedImageUrl: { $regex: `processed/${userId}_` }
         }).select('processedImageUrl');
 
-        console.log('Resultado directo de la consulta:', images);
-
         if (images.length === 0) {
             return res.status(404).json({ message: "No images found for the specified user ID" });
         }
 
         const imageUrls = images.map(image => image.processedImageUrl);
-        console.log('Array de URLs después del mapeo:', imageUrls);
-
         return res.status(200).json(imageUrls);
     } catch (error) {
         console.error('Error while fetching images:', error);

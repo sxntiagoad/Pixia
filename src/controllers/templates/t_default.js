@@ -6,12 +6,12 @@ export default class DefaultTemplate extends Template {
         const { title, requirements, description } = texts;
         
         const style = {
-            titleFont: 'bold 50px Arial, sans-serif',
+            titleFont: 'bold 110px Montserrat, sans-serif',
             titleColor: '#FFFFFF',
-            subtitleFont: 'bold 20px Arial, sans-serif',
+            subtitleFont: 'bold 40px Arial, sans-serif',
             subtitleColor: '#FFFFFF',
             shadow: {
-                blur: 4,
+                blur: 5,
                 offset: 2
             }
         };
@@ -23,7 +23,7 @@ export default class DefaultTemplate extends Template {
         const randomContainer = TEXT_CONTAINERS[randomKey];
         randomContainer(this.ctx, this.width, this.height);
 
-        this.drawBottomBar();
+        await this.drawBottomBar(0.07);
 
         this.drawTitle(title, style);
         this.drawRequirements(requirements, style);
@@ -33,23 +33,22 @@ export default class DefaultTemplate extends Template {
     drawTitle(text, style) {
         this.ctx.font = style.titleFont;
         this.ctx.fillStyle = style.titleColor;
-        this.drawTextSection(text, 60, 50, this.width / 2);
+        this.drawTextSection(text, 60, 110, this.width / 2);
     }
 
     drawRequirements(text, style) {
         this.ctx.font = style.subtitleFont;
         this.ctx.fillStyle = style.subtitleColor;
-        this.drawTextSection(text, 40, 250, this.width / 2);
+        this.drawTextSection(text, 40, 380, this.width / 2);
     }
 
     drawDescription(text, style) {
         this.ctx.font = style.subtitleFont;
         this.ctx.fillStyle = style.subtitleColor;
-        this.drawTextSection(text, 40, 450, this.width / 2);
+        this.drawTextSection(text, 40, 700, this.width / 2);
     }
-    
+
     drawTextSection(text, fontSize, textY, maxWidth) {
-        this.ctx.font = `bold ${fontSize}px Arial, sans-serif`;
         const words = text.split(' ');
         let line = '';
         const textX = 10;
@@ -62,7 +61,7 @@ export default class DefaultTemplate extends Template {
             if (testWidth > maxWidth && n > 0) {
                 this.ctx.fillText(line, textX, textY);
                 line = words[n] + ' ';
-                textY += fontSize + 10;
+                textY += fontSize + 20;
             } else {
                 line = testLine;
             }

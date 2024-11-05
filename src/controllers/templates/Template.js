@@ -26,7 +26,7 @@ class Template {
             image.onload = () => {
                 // Calcular dimensiones para centrar la imagen
                 const imageHeight = barHeight * 0.8;
-                const imageWidth = imageHeight * 3;
+                const imageWidth = imageHeight * 3.4;
                 
                 const x = (this.width - imageWidth) / 2;
                 const y = this.height - barHeight + (barHeight - imageHeight) / 2;
