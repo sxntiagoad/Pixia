@@ -361,7 +361,7 @@ const ImageGeneratorPage = () => {
               <Swiper
                 modules={[Navigation, Pagination]}
                 spaceBetween={20}
-                slidesPerView={6}
+                slidesPerView={4}
                 navigation
                 pagination={{ clickable: true }}
                 className="template-swiper"
