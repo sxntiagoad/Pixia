@@ -1,5 +1,4 @@
 import Template from './Template.js';
-import TEXT_CONTAINERS from '../../styles/textContainers.js';
 import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 

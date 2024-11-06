@@ -2,17 +2,38 @@ import axios from 'axios';
 import { API_KEY } from '../config.js';
 import { listObjectsFromS3 } from '../s3config.js'
 import Image from '../models/image.model.js';
-import { AWS_BUCKET_NAME, AWS_BUCKET_REGION } from "../s3config.js";
+import { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_ACCESS_KEY, AWS_SECRET_KEY } from "../config.js";
 import { improvePrompt } from './prompt.controller.js';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { GetObjectCommand } from '@aws-sdk/client-s3';
+import { s3Client} from '../s3config.js';
+import { loadImageFromS3 } from '../s3config.js';
 
 const url = "https://api.segmind.com/v1/flux-realism-lora";
 
+// Definir las dimensiones según el formato
+const IMAGE_FORMATS = {
+    NORMAL_POST: {
+        width: 1080,
+        height: 1080,
+        aspectRatio: "1:1"
+    },
+    STORIES_POST: {
+        width: 1080,
+        height: 1920,
+        aspectRatio: "9:16"
+    }
+};
+
 export const generateImage = async (req, res) => {
-    const { prompt } = req.body;
+    const { prompt, format = 'NORMAL_POST' } = req.body;
     
     try {
         const improvedPrompt = await improvePrompt(prompt);
         console.log('Prompt mejorado:', improvedPrompt);
+
+        // Obtener dimensiones según el formato
+        const dimensions = IMAGE_FORMATS[format] || IMAGE_FORMATS.NORMAL_POST;
 
         const data = {
             prompt: improvedPrompt,
@@ -20,9 +41,9 @@ export const generateImage = async (req, res) => {
             seed: Math.floor(Math.random() * 1000000),
             scheduler: "dpm++2m",
             sampler_name: "euler_a",
-            aspect_ratio: "1:1",
-            width: 1080,
-            height: 1080,
+            width: dimensions.width,
+            height: dimensions.height,
+            aspect_ratio: dimensions.aspectRatio,
             upscale_value: 1.0,
             lora_strength: 0.6,
             samples: 1,
@@ -52,8 +73,9 @@ export const generateImage = async (req, res) => {
                 imageUrl,
                 status: 'generated',
                 metadata: {
-                    width: 512,
-                    height: 512,
+                    width: dimensions.width,
+                    height: dimensions.height,
+                    format: format,
                     generationParams: {
                         steps: 15,
                         scheduler: "dpm++2m",
@@ -68,7 +90,9 @@ export const generateImage = async (req, res) => {
             res.status(200).json({ 
                 imageUrl,
                 improvedPrompt,
-                id: newImage._id
+                id: newImage._id,
+                format: format,
+                dimensions: dimensions
             });
         } else {
             throw new Error('La respuesta del servidor no es una imagen');
@@ -139,4 +163,37 @@ export const getImages = async (req, res) => {
         console.error('Error al obtener las imágenes:', error);
         res.status(500).json({ mensaje: 'Error al obtener las imágenes', error: error.message });
     }
+};
+
+export const downloadImage = async (req, res) => {
+  try {
+    const fileName = req.params.fileName;
+    const key = `processed/${fileName}`;
+    
+    try {
+      // Usar la función existente loadImageFromS3
+      const imageBuffer = await loadImageFromS3(AWS_BUCKET_NAME, key);
+      
+      // Configurar los headers de la respuesta
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+      
+      // Enviar el buffer
+      res.send(imageBuffer);
+
+    } catch (s3Error) {
+      console.error('Error específico de S3:', s3Error);
+      if (s3Error.message.includes('404')) {
+        return res.status(404).json({ message: 'Imagen no encontrada' });
+      }
+      throw s3Error;
+    }
+
+  } catch (error) {
+    console.error('Error al descargar la imagen:', error);
+    res.status(500).json({ 
+      message: 'Error al descargar la imagen',
+      error: error.message 
+    });
+  }
 };

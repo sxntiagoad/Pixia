@@ -1,8 +1,11 @@
 import axios from './axios';
 
-export const generateImageApi = async (prompt) => {
+export const generateImageApi = async ({ prompt, format }) => {
   try {
-    const response = await axios.post('/images/generate-image', { prompt });
+    const response = await axios.post('/images/generate-image', { 
+      prompt,
+      format 
+    });
     return response;
   } catch (error) {
     throw error;
@@ -19,23 +22,33 @@ export const getProcessedImageUrlsByUserId = async (userId) => {
   }
 };
 
-export const processImageApi = (imageUrl, overlayText, prompt, templateName) => {
+export const processImageApi = (imageUrl, overlayText, prompt, templateName, format) => {
   return axios.post('/images/process-image', { 
     imageUrl, 
     overlayText, 
     prompt,
-    templateName 
+    templateName,
+    format 
   });
 };
 
-export const uploadSelectedImageApi = async (selectedImageId, imageData, prompt, originalImageUrl, overlayText, userId) => {
+export const uploadSelectedImageApi = async (
+  selectedImageId, 
+  imageData, 
+  prompt, 
+  originalImageUrl, 
+  overlayText, 
+  userId,
+  format 
+) => {
   return axios.post('/images/upload-variation', {
     selectedImageId,
     imageData,
     prompt,
     originalImageUrl,
     overlayText,
-    userId
+    userId,
+    format 
   });
 };
 

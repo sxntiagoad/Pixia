@@ -31,7 +31,6 @@ const PostHistoryPage = () => {
         }
 
         const imageUrls = await getProcessedImageUrlsByUserId(user.id);
-        console.log('URLs obtenidas:', imageUrls);
         setImages(imageUrls);
         setIsLoading(false);
       } catch (error) {

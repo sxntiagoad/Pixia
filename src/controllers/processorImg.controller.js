@@ -3,10 +3,22 @@ import { uploadToS3, AWS_BUCKET_NAME } from "../s3config.js";
 import templateRegistry from "../core/templateRegistry/TemplateRegistry.js";
 import Image from "../models/image.model.js";
 
-const SQUARE_FORMAT = { width: 1080, height: 1080 };
+const IMAGE_FORMATS = {
+    NORMAL_POST: {
+        width: 1080,
+        height: 1080,
+        aspectRatio: "1:1"
+    },
+    STORIES_POST: {
+        width: 1080,
+        height: 1920,
+        aspectRatio: "9:16"
+    }
+};
 
-async function generateVariation(variationNumber, imageUrl, texts, templateName) {
-    const { width, height } = SQUARE_FORMAT;
+async function generateVariation(variationNumber, imageUrl, texts, templateName, format) {
+    const dimensions = IMAGE_FORMATS[format] || IMAGE_FORMATS.NORMAL_POST;
+    const { width, height } = dimensions;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
 
@@ -24,7 +36,7 @@ async function generateVariation(variationNumber, imageUrl, texts, templateName)
         const template = new Template(ctx, width, height, baseImage);
         
         // Aplicar el template
-        await template.draw(texts, AWS_BUCKET_NAME);
+        await template.draw(texts, AWS_BUCKET_NAME, format);
         
         return canvas.toBuffer('image/png');
     } catch (error) {
@@ -52,17 +64,17 @@ function fitImageToCanvas(ctx, image, canvasWidth, canvasHeight) {
 
 export const processImage = async (req, res) => {
     try {
-        const { imageUrl, overlayText, prompt, templateName = 't_default' } = req.body;
+        const { imageUrl, overlayText, prompt, templateName, format } = req.body;
         const texts = JSON.parse(overlayText);
         let variations = [];
 
         try {
             if (templateName === 't_default') {
                 variations = await Promise.all([
-                    generateVariation(1, imageUrl, texts, templateName),
-                    generateVariation(2, imageUrl, texts, templateName),
-                    generateVariation(3, imageUrl, texts, templateName),
-                    generateVariation(4, imageUrl, texts, templateName)
+                    generateVariation(1, imageUrl, texts, templateName, format),
+                    generateVariation(2, imageUrl, texts, templateName, format),
+                    generateVariation(3, imageUrl, texts, templateName, format),
+                    generateVariation(4, imageUrl, texts, templateName, format)
                 ]);
             } else {
                 const variation = await generateVariation(1, imageUrl, texts, templateName);

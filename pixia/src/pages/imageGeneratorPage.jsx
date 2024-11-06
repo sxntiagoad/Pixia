@@ -40,7 +40,21 @@ const ImageGeneratorPage = () => {
   const [selectedTemplate, setSelectedTemplate] = useState('t_default');
   const [autoMode, setAutoMode] = useState(false);
   const [vacancies, setVacancies] = useState([]);
+  const [isFinalStep, setIsFinalStep] = useState(false);
   const [selectedVacancy, setSelectedVacancy] = useState(null);
+  
+  const IMAGE_DIMENSIONS = {
+    NORMAL_POST: {
+        width: 1080,
+        height: 1080,
+        aspectRatio: "1:1"
+    },
+    STORIES_POST: {
+        width: 1080,
+        height: 1920,
+        aspectRatio: "9:16"
+    }
+};
 
   useEffect(() => {
     fetchImages();
@@ -56,7 +70,11 @@ const ImageGeneratorPage = () => {
     setError('');
     setIsLoading(true);
     try {
-      const response = await generateImageApi(prompt);
+      const response = await generateImageApi({
+        prompt,
+        format: selectedFormat
+      });
+
       if (response.data && response.data.imageUrl) {
         setImageUrl(response.data.imageUrl);
       } else {
@@ -89,7 +107,8 @@ const ImageGeneratorPage = () => {
         imageUrl,
         overlayText,
         prompt,
-        selectedTemplate
+        selectedTemplate,
+        selectedFormat
       );
 
       console.log('Respuesta del procesamiento:', response.data);
@@ -151,7 +170,6 @@ const ImageGeneratorPage = () => {
             setOverlayRequirements('');
             setOverlayDescription('');
             setImageUrl('');
-            setProcessedImageUrl('');
             setVariations([]);
             setSelectedVariation(null);
         } else {
@@ -225,58 +243,51 @@ const ImageGeneratorPage = () => {
   };
 
   const handleAutomaticProcess = async () => {
-    if (!selectedTemplate) {
-      setError('Por favor seleccione una plantilla');
-      return;
-    }
-
-    if (!selectedVacancy) {
-      setError('Por favor seleccione una vacante');
-      return;
+    if (!selectedTemplate || !selectedVacancy || !selectedFormat) {
+        setError('Por favor seleccione una plantilla, una vacante y un formato');
+        return;
     }
 
     setIsLoading(true);
     setError('');
 
     try {
-      //Generar el prompt y los textos automáticamente
-      const { generatedTexts } = await generateVacancyTextsApi(selectedVacancy);
+        const { generatedTexts } = await generateVacancyTextsApi(selectedVacancy);
+        const { prompt: generatedPrompt } = await generateVacancyPromptApi(generatedTexts);
 
-      //Generar la imagen con el prompt
-      const { prompt: generatedPrompt } = await generateVacancyPromptApi(generatedTexts);
+        const imageResponse = await generateImageApi({
+            prompt: generatedPrompt,
+            format: selectedFormat
+        });
 
-      //Generar la imagen
-      const imageResponse = await generateImageApi(generatedPrompt);
-      const generatedImageUrl = imageResponse.data.imageUrl;
+        const generatedImageUrl = imageResponse.data.imageUrl;
 
-      //Procesar la imagen con el template
-      const processResponse = await processImageApi(
-        generatedImageUrl,
-        JSON.stringify({
-          title: generatedTexts.title,
-          description: generatedTexts.text1,
-          requirements: generatedTexts.text2
-        }),
-        generatedPrompt,
-        selectedTemplate
-      );
+        const processResponse = await processImageApi(
+            generatedImageUrl,
+            JSON.stringify({
+                title: generatedTexts.title,
+                description: generatedTexts.text1,
+                requirements: generatedTexts.text2
+            }),
+            generatedPrompt,
+            selectedTemplate,
+            selectedFormat
+        );
 
-      // Actualizar el estado con todos los datos generados
-      setPrompt(generatedPrompt);
-      setOverlayTitle(generatedTexts.title);
-      setOverlayDescription(generatedTexts.text1);
-      setOverlayRequirements(generatedTexts.text2);
-      setImageUrl(generatedImageUrl);
-      setVariations(processResponse.data.variations);
+        setPrompt(generatedPrompt);
+        setOverlayTitle(generatedTexts.title);
+        setOverlayDescription(generatedTexts.text1);
+        setOverlayRequirements(generatedTexts.text2);
+        setImageUrl(generatedImageUrl);
+        setVariations(processResponse.data.variations);
 
-      // Saltar al paso 4
-      setStep(4);
+        setStep(4);
 
     } catch (error) {
-      console.error('Error en el proceso automático:', error);
-      setError('Error en el proceso automático. Por favor, intente de nuevo.');
+        console.error('Error en el proceso automático:', error);
+        setError('Error en el proceso automático. Por favor, intente de nuevo.');
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
   };
 
@@ -432,10 +443,10 @@ const ImageGeneratorPage = () => {
             </button>
             {imageUrl && (
               <div className="mt-4">
-                <img 
-                  src={imageUrl} 
-                  alt="Imagen generada" 
-                  className="w-full h-auto rounded-lg shadow-lg"
+                <ImagePreview 
+                  imageUrl={imageUrl} 
+                  format={selectedFormat}
+                  isFinalStep={false}
                 />
                 <button
                   onClick={() => setStep(3)}
@@ -528,7 +539,9 @@ const ImageGeneratorPage = () => {
               {isLoading ? 'Subiendo...' : 'Subir Variación Seleccionada'}
             </button>
             <button
-              onClick={() => setStep(3)}
+              onClick={() => {setStep(3);
+                setIsFinalStep(true);
+              }}
               className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
             >
               Anterior
@@ -539,9 +552,23 @@ const ImageGeneratorPage = () => {
         return (
           <>
             <h2 className="text-2xl font-bold mb-4 text-gray-200">Resultado Final</h2>
-            <ImagePreview imageUrl={processedImageUrl} />
+            {processedImageUrl ? (
+              <ImagePreview 
+                imageUrl={processedImageUrl} 
+                format={selectedFormat}
+                isFinalStep={true}
+              />
+            ) : (
+              <div className="text-center p-4 bg-gray-700 rounded-lg">
+                <p className="text-gray-300">No hay imagen procesada disponible</p>
+              </div>
+            )}
             <button
-              onClick={() => setStep(1)}
+              onClick={() => {
+                setStep(1);
+                setProcessedImageUrl('');
+                setIsFinalStep(false);
+              }}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
             >
               Crear Nueva Imagen

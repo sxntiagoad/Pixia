@@ -14,12 +14,12 @@ export default class DefaultTemplate extends Template {
         }
     };
 
-    async draw(texts) {
+    async draw(texts, format) {
         const { title, requirements, description } = texts;
         
         // 1. Primero dibujar la imagen base con offset
         await this.drawBaseImageWithOffset(
-            50,  // offset X
+            0,  // offset X
             0,   // offset Y
             '#FFFFFF'  // color de fondo
         );
