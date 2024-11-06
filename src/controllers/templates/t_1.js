@@ -19,16 +19,18 @@ export default class Template1 extends Template {
         },
         logoUrl: 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/logo.png'
     };
+    static customStyle = {
+        imageType: "full",
+        backgroundColor: "#000000",
+        offsetX: 200,
+        offsetY: 0
+    }
 
     async draw(texts, bucketName) {
         const { title, requirements, description } = texts;
         
         // 1. Primero dibujar la imagen base con offset
-        await this.drawBaseImageWithOffset(
-            200,  // offset X
-            0,   // offset Y
-            '#000000'  // color de fondo
-        );
+        await this.drawBaseImage(Template1.customStyle);
 
         // 2. Cargar y dibujar la plantilla desde S3
         try {

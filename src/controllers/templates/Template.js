@@ -2,6 +2,10 @@ import { Image, loadImage } from 'canvas';
 
 class Template {
     constructor(ctx, width, height, baseImage) {
+        if (!ctx) throw new Error('Contexto no proporcionado');
+        if (!width || !height) throw new Error('Dimensiones no válidas');
+        if (!baseImage) throw new Error('Imagen base no proporcionada');
+
         this.ctx = ctx;
         this.width = width;
         this.height = height;
@@ -108,6 +112,118 @@ class Template {
             return true;
         } catch (error) {
             console.error('Error al dibujar imagen de overlay:', error);
+            return false;
+        }
+    }
+
+    async drawBaseImageWithCustomSize(x, y, targetWidth, targetHeight, backgroundColor) {
+        try {
+            // Limpiar el canvas
+            this.ctx.clearRect(0, 0, this.width, this.height);
+            
+            // Dibujar el fondo
+            this.ctx.fillStyle = backgroundColor;
+            this.ctx.fillRect(0, 0, this.width, this.height);
+            
+            // Calcular dimensiones manteniendo la proporción
+            const aspectRatio = this.baseImage.width / this.baseImage.height;
+            let newWidth = targetWidth;
+            let newHeight = targetHeight;
+            
+            // Ajustar dimensiones para mantener proporción
+            if (targetWidth / targetHeight > aspectRatio) {
+                newWidth = targetHeight * aspectRatio;
+            } else {
+                newHeight = targetWidth / aspectRatio;
+            }
+            
+            // Dibujar la imagen base en la posición especificada
+            this.ctx.drawImage(this.baseImage, x, y, newWidth, newHeight);
+            
+            return true;
+        } catch (error) {
+            console.error('Error al dibujar imagen base personalizada:', error);
+            return false;
+        }
+    }
+
+    async drawBaseImage(style) {
+        console.log('Iniciando drawBaseImage con estilo:', JSON.stringify(style, null, 2));
+        try {
+            // Validar el estilo
+            if (!style) {
+                throw new Error('No se proporcionó estilo para drawBaseImage');
+            }
+            if (!style.imageType) {
+                throw new Error('No se especificó imageType en el estilo');
+            }
+
+            if (style.imageType === 'full') {
+                console.log('Procesando imagen tipo "full"');
+                // Validar parámetros necesarios
+                if (typeof style.backgroundColor === 'undefined') {
+                    console.warn('No se especificó backgroundColor, usando valor por defecto');
+                }
+                
+                const result = await this.drawBaseImageWithOffset(
+                    style.offsetX || 0,
+                    style.offsetY || 0,
+                    style.backgroundColor || '#000000'
+                );
+                
+                if (!result) {
+                    throw new Error('Falló el dibujado de imagen con offset');
+                }
+                return true;
+            } else {
+                console.log('Procesando imagen tipo "custom"');
+                // Validar baseImage
+                if (!style.baseImage) {
+                    throw new Error('No se proporcionó configuración baseImage para tipo custom');
+                }
+                
+                const { x, y, width, height } = style.baseImage;
+                console.log('Dimensiones recibidas:', { x, y, width, height });
+                
+                if (!width || !height) {
+                    throw new Error('Dimensiones inválidas en baseImage');
+                }
+
+                // Limpiar y preparar canvas
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                this.ctx.fillStyle = style.backgroundColor || '#000000';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+
+                // Calcular nuevas dimensiones
+                const aspectRatio = this.baseImage.width / this.baseImage.height;
+                console.log('Ratio de aspecto original:', aspectRatio);
+                
+                let newWidth = width;
+                let newHeight = height;
+                
+                if (width / height > aspectRatio) {
+                    newWidth = height * aspectRatio;
+                    console.log('Ajustando width para mantener proporción:', newWidth);
+                } else {
+                    newHeight = width / aspectRatio;
+                    console.log('Ajustando height para mantener proporción:', newHeight);
+                }
+                
+                try {
+                    console.log('Intentando dibujar imagen con dimensiones:', {
+                        x, y, newWidth, newHeight
+                    });
+                    this.ctx.drawImage(this.baseImage, x, y, newWidth, newHeight);
+                    console.log('Imagen dibujada exitosamente');
+                    return true;
+                } catch (drawError) {
+                    console.error('Error al dibujar en canvas:', drawError);
+                    throw drawError;
+                }
+            }
+        } catch (error) {
+            console.error('Error en drawBaseImage:', error);
+            console.error('Stack trace:', error.stack);
             return false;
         }
     }
