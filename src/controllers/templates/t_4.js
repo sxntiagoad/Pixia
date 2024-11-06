@@ -22,7 +22,7 @@ export default class Template4 extends Template {
     static customStyle = {
         imageType: "full",
         backgroundColor: "#000000",
-        offsetX: 200,
+        offsetX: 250,
         offsetY: 0
     }
 
@@ -30,11 +30,11 @@ export default class Template4 extends Template {
         const { title, requirements, description } = texts;
         
         // 1. Primero dibujar la imagen base con offset
-        await this.drawBaseImage(Template1.customStyle);
+        await this.drawBaseImage(Template4.customStyle);
 
         // 2. Cargar y dibujar la plantilla desde S3
         try {
-            const templateBuffer = await loadImageFromS3(bucketName, Template1.templateKey);
+            const templateBuffer = await loadImageFromS3(bucketName, Template4.templateKey);
             const templateImage = await loadImage(templateBuffer);
             this.ctx.drawImage(templateImage, 0, 0, this.width, this.height);
         } catch (error) {
@@ -42,7 +42,7 @@ export default class Template4 extends Template {
         }
 
         // 3. Finalmente dibujar textos y otros elementos
-        this.setupShadow(Template1.DEFAULT_STYLE.shadow);
+        this.setupShadow(Template4.DEFAULT_STYLE.shadow);
         await this.drawBottomBar(0.07);
         this.drawPresetText();
         this.drawApplyNowText();
@@ -52,33 +52,33 @@ export default class Template4 extends Template {
     }
 
     drawPresetText() {
-        this.ctx.font = Template1.DEFAULT_STYLE.presetFont;
+        this.ctx.font = Template4.DEFAULT_STYLE.presetFont;
         this.ctx.fillStyle = '#000000';
         this.ctx.fillText("Buscamos talento", 160, 430 );
         // this.ctx.fillText("talento", 55, 290);
     }
 
     drawApplyNowText() {
-        this.ctx.font = Template1.DEFAULT_STYLE.applyNowFont;
+        this.ctx.font = Template4.DEFAULT_STYLE.applyNowFont;
         this.ctx.fillStyle = '#000000';
         this.ctx.fillText("¡Aplica ahora!", 120, 850);
     }
 
     drawTitle(text) {
-        this.ctx.font = Template1.DEFAULT_STYLE.titleFont;
+        this.ctx.font = Template4.DEFAULT_STYLE.titleFont;
         this.ctx.fillStyle = '#FFFFFF';
-        this.drawTextSection(text, 20, 180, this.width/2, Template1.DEFAULT_STYLE.titleFont);
+        this.drawTextSection(text, 20, 180, this.width/2, Template4.DEFAULT_STYLE.titleFont);
     }
 
     drawRequirements(text) {
-        this.ctx.font = Template1.DEFAULT_STYLE.subtitleFont;
-        this.ctx.fillStyle = Template1.DEFAULT_STYLE.subtitleColor;
-        this.drawTextSection(text, 20, 590, this.width*0.50, Template1.DEFAULT_STYLE.presetFont);
+        this.ctx.font = Template4.DEFAULT_STYLE.subtitleFont;
+        this.ctx.fillStyle = Template4.DEFAULT_STYLE.subtitleColor;
+        this.drawTextSection(text, 20, 590, this.width*0.50, Template4.DEFAULT_STYLE.presetFont);
     }
 
     drawDescription(text) {
-        this.ctx.font = Template1.DEFAULT_STYLE.requirementsFont;
-        this.ctx.fillStyle = Template1.DEFAULT_STYLE.subtitleColor;
-        this.drawTextSection(text, 20, 900, this.width/2, Template1.DEFAULT_STYLE.presetFont);
+        this.ctx.font = Template4.DEFAULT_STYLE.requirementsFont;
+        this.ctx.fillStyle = Template4.DEFAULT_STYLE.subtitleColor;
+        this.drawTextSection(text, 20, 900, this.width/2, Template4.DEFAULT_STYLE.presetFont);
     }
 }

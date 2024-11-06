@@ -387,17 +387,17 @@ const ImageGeneratorPage = () => {
                   <SwiperSlide key={template.id}>
                     <div
                       onClick={() => setSelectedTemplate(template.id)}
-                      className={`cursor-pointer rounded-lg overflow-hidden transition-all duration-300 ${
+                      className={`cursor-pointer rounded-lg overflow-hidden transition-all duration-300 h-48 flex items-center justify-center ${
                         selectedTemplate === template.id 
                           ? 'ring-4 ring-indigo-500 transform scale-105' 
                           : 'hover:ring-2 hover:ring-indigo-400 hover:scale-102'
                       }`}
                     >
-                      <div className="relative w-64 mx-auto"> {/* Ancho fijo más pequeño */}
+                      <div className="relative w-48 mx-auto">
                         <img 
                           src={template.previewUrl} 
                           alt={`Template ${template.id}`}
-                          className="w-full h-40 object-cover" /* Altura más pequeña */
+                          className="w-full h-auto object-contain max-h-40"
                         />
                         <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
                           <p className="text-white text-center text-sm font-medium">

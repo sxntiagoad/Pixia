@@ -26,3 +26,24 @@ style{
     display: flex;
     justify-content: center;
   }
+  .aspect-ratio-container {
+    position: relative;
+    width: 100%;
+  }
+  
+  .aspect-ratio-container::before {
+    content: "";
+    display: block;
+    padding-top: 100%; /* Relación de aspecto 1:1 */
+    /* Puedes ajustar este valor para otras relaciones de aspecto, por ejemplo:
+       padding-top: 56.25%; // Relación de aspecto 16:9
+    */
+  }
+  
+  .aspect-ratio-container > .container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }

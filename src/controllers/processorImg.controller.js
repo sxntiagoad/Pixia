@@ -1,5 +1,6 @@
 import { createCanvas, loadImage } from "canvas";
-import { uploadToS3, AWS_BUCKET_NAME } from "../s3config.js";
+import { uploadToS3 } from "../s3config.js";
+import { AWS_BUCKET_NAME } from "../config.js";
 import templateRegistry from "../core/templateRegistry/TemplateRegistry.js";
 import Image from "../models/image.model.js";
 
