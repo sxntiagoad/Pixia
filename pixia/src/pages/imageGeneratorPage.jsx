@@ -252,7 +252,7 @@ const ImageGeneratorPage = () => {
     setError('');
 
     try {
-        const { generatedTexts } = await generateVacancyTextsApi(selectedVacancy);
+        const { generatedTexts } = await generateVacancyTextsApi(selectedVacancy, selectedFormat);
         const { prompt: generatedPrompt } = await generateVacancyPromptApi(generatedTexts);
 
         const imageResponse = await generateImageApi({

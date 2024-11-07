@@ -3,7 +3,7 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template3 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/template3.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1730926321147.png';
     static templateKey = "templates/template3.png";  // Key de la plantilla en S3 
     static DEFAULT_STYLE = {
         presetFont: 'bold 30px Arial, sans-serif',
@@ -17,7 +17,14 @@ export default class Template3 extends Template {
             blur: 4,
             offset: 2
         },
-        logoUrl: 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/logo.png'
+        logoUrl: 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/logo.png',
+        alignment: {
+            title: 'right',      // Título alineado a la derecha
+            requirements: 'right', // Requisitos alineados a la derecha
+            description: 'right',  // Descripción alineada a la derecha
+            preset: 'left',       // Texto preset normal a la izquierda
+            applyNow: 'left'      // Texto "Aplica ahora" normal a la izquierda
+        }
     };
     static customStyle = {
         imageType: "full",
@@ -44,41 +51,63 @@ export default class Template3 extends Template {
         // 3. Finalmente dibujar textos y otros elementos
         this.setupShadow(Template3.DEFAULT_STYLE.shadow);
         await this.drawBottomBar(0.07);
-        this.drawPresetText();
         this.drawApplyNowText();
         this.drawTitle(title);
         this.drawRequirements(requirements);
         this.drawDescription(description);
     }
 
-    drawPresetText() {
-        this.ctx.font = Template3.DEFAULT_STYLE.presetFont;
-        this.ctx.fillStyle = '#000000';
-        this.ctx.fillText("Buscamos talento", 160, 430 );
-        // this.ctx.fillText("talento", 55, 290);
-    }
+
 
     drawApplyNowText() {
-        this.ctx.font = Template3.DEFAULT_STYLE.applyNowFont;
-        this.ctx.fillStyle = '#000000';
-        this.ctx.fillText("¡Aplica ahora!", 120, 850);
+        this.ctx.font = Template3.DEFAULT_STYLE.subtitleFont;
+        this.ctx.fillStyle = Template3.DEFAULT_STYLE.subtitleColor;
+        this.drawTextSection(
+            "¡Aplica ahora!", 
+            715, 
+            825,
+            this.width/2,
+            Template3.DEFAULT_STYLE.applyNowFont,
+            Template3.DEFAULT_STYLE.alignment.applyNow
+        );
     }
 
     drawTitle(text) {
         this.ctx.font = Template3.DEFAULT_STYLE.titleFont;
         this.ctx.fillStyle = '#FFFFFF';
-        this.drawTextSection(text, 20, 180, this.width/2, Template3.DEFAULT_STYLE.titleFont);
+        this.drawTextSection(
+            text, 
+            530, 
+            230, 
+            this.width/2, 
+            Template3.DEFAULT_STYLE.titleFont,
+            Template3.DEFAULT_STYLE.alignment.title
+        );
     }
 
     drawRequirements(text) {
         this.ctx.font = Template3.DEFAULT_STYLE.subtitleFont;
         this.ctx.fillStyle = Template3.DEFAULT_STYLE.subtitleColor;
-        this.drawTextSection(text, 20, 590, this.width*0.50, Template3.DEFAULT_STYLE.presetFont);
+        this.drawTextSection(
+            text, 
+            530, 
+            580, 
+            this.width*0.50, 
+            Template3.DEFAULT_STYLE.presetFont,
+            Template3.DEFAULT_STYLE.alignment.requirements
+        );
     }
 
     drawDescription(text) {
         this.ctx.font = Template3.DEFAULT_STYLE.requirementsFont;
         this.ctx.fillStyle = Template3.DEFAULT_STYLE.subtitleColor;
-        this.drawTextSection(text, 20, 900, this.width/2, Template3.DEFAULT_STYLE.presetFont);
+        this.drawTextSection(
+            text, 
+            530, 
+            920, 
+            this.width/2, 
+            Template3.DEFAULT_STYLE.presetFont,
+            Template3.DEFAULT_STYLE.alignment.description
+        );
     }
 }

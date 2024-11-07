@@ -83,7 +83,19 @@ const generateVacancyPrompt = async (title, description, requirements) => {
   }
 };
 
-const generateVacancyTexts = async (title, description, requirements) => {
+const generateVacancyTexts = async (title, description, requirements, format) => {
+  const textLimits = format === 'STORIES_POST' 
+    ? {
+        titleLimit: 30,
+        descriptionLimit: 100,  // Aumentado para Stories
+        requirementsLimit: 150  // Aumentado para Stories
+      }
+    : {
+        titleLimit: 30,
+        descriptionLimit: 50,   // Normal post
+        requirementsLimit: 100  // Normal post
+      };
+
   const data = {
     model: "claude-3-haiku",
     max_tokens: 300,
@@ -91,7 +103,7 @@ const generateVacancyTexts = async (title, description, requirements) => {
     messages: [
       {
         role: "user",
-        content: ` THE TEXT HAVE TO BE ON SPANISH Generate a compelling job posting title and two brief texts based on these job details:
+        content: `Generate a compelling job posting title and two brief texts based on these job details:
 
         Original Title: ${title}
         Description: ${description}
@@ -99,9 +111,10 @@ const generateVacancyTexts = async (title, description, requirements) => {
 
         Rules:
         1. Generate these 3 elements:
-           - An attention-grabbing job title (max 30 characters)
-           - A brief, engaging description text (max 50 characters)
-           - A concise requirements text (max 100 characters)
+        ${console.log(textLimits)}
+           - An attention-grabbing job title (max ${textLimits.titleLimit} characters)
+           - A brief, engaging description text (max ${textLimits.descriptionLimit} characters)
+           - A concise requirements text (max ${textLimits.requirementsLimit} characters)
         2. The texts should be professional but engaging
         3. Use clear, direct language
         4. Focus on the most important aspects
@@ -201,7 +214,7 @@ export const processVacancyPrompt = async (req, res) => {
 
 export const processVacancyTexts = async (req, res) => {
   try {
-    const { title, description, requirements } = req.body;
+    const { title, description, requirements, format } = req.body;
     
     if (!title || !description || !requirements) {
       return res.status(400).json({ 
@@ -212,7 +225,8 @@ export const processVacancyTexts = async (req, res) => {
     const generatedTexts = await generateVacancyTexts(
       title,
       description,
-      requirements
+      requirements,
+      format
     );
     
     res.json({ 

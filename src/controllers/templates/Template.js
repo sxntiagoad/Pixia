@@ -46,11 +46,12 @@ class Template {
     }
 
     
-    drawTextSection(text, textX, textY, maxWidth, style) {
+    drawTextSection(text, textX, textY, maxWidth, style, alignment = 'left') {
         if (!style) {
             console.error('No se proporcionó un estilo de fuente');
             return;
         }
+        
         const words = text.toString().split(' ');
         let line = '';
         const getFontSize = (fontString) => {
@@ -66,14 +67,31 @@ class Template {
                 const testWidth = metrics.width;
                 
                 if (testWidth > maxWidth && n > 0) {
-                    this.ctx.fillText(line, textX, textY);
+                    // Ajustar la posición X según la alineación
+                    let xPosition = textX;
+                    if (alignment === 'center') {
+                        xPosition = textX + (maxWidth - this.ctx.measureText(line).width) / 2;
+                    } else if (alignment === 'right') {
+                        xPosition = textX + (maxWidth - this.ctx.measureText(line).width);
+                    }
+                    
+                    this.ctx.fillText(line, xPosition, textY);
                     line = words[n] + ' ';
                     textY += fontSize + 10;
                 } else {
                     line = testLine;
                 }
             }
-            this.ctx.fillText(line, textX, textY);
+            
+            // Dibujar la última línea con la alineación correcta
+            let xPosition = textX;
+            if (alignment === 'center') {
+                xPosition = textX + (maxWidth - this.ctx.measureText(line).width) / 2;
+            } else if (alignment === 'right') {
+                xPosition = textX + (maxWidth - this.ctx.measureText(line).width);
+            }
+            
+            this.ctx.fillText(line, xPosition, textY);
         } catch (error) {
             console.error('Error al procesar el texto:', error);
         }

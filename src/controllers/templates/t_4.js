@@ -3,7 +3,7 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template4 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/template4.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1730926676281.png';
     static templateKey = "templates/template4.png";  // Key de la plantilla en S3 
     static DEFAULT_STYLE = {
         presetFont: 'bold 30px Arial, sans-serif',
@@ -54,14 +54,14 @@ export default class Template4 extends Template {
     drawPresetText() {
         this.ctx.font = Template4.DEFAULT_STYLE.presetFont;
         this.ctx.fillStyle = '#000000';
-        this.ctx.fillText("Buscamos talento", 160, 430 );
+        this.ctx.fillText("Buscamos talento", 120, 460 );
         // this.ctx.fillText("talento", 55, 290);
     }
 
     drawApplyNowText() {
         this.ctx.font = Template4.DEFAULT_STYLE.applyNowFont;
         this.ctx.fillStyle = '#000000';
-        this.ctx.fillText("¡Aplica ahora!", 120, 850);
+        this.ctx.fillText("¡Aplica ahora!", 120, 810);
     }
 
     drawTitle(text) {
