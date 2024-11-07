@@ -6,8 +6,8 @@ export default class Template9 extends Template {
     static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/template9.png';
     static templateKey = "templates/template9.png";
     static DEFAULT_STYLE = {
-        titleFont: 'bold 80px Arial, sans-serif',
-        subtitleFont: 'bold 40px Arial, sans-serif',
+        titleFont: 'bold 80px "Bodoni Moda", serif',
+        subtitleFont: 'bold 40px "Poppins", sans-serif',
         requirementsFont: '24px Arial, sans-serif',
         titleColor: '#FFFFFF',
         subtitleColor: '#FFFFFF',
@@ -36,14 +36,14 @@ export default class Template9 extends Template {
             const { title, requirements, description } = texts;
 
             // 1. Dibujar imagen base
-            const baseImageResult = await this.drawBaseImage(Template2.customStyle);
+            const baseImageResult = await this.drawBaseImage(Template9.customStyle);
             if (!baseImageResult) {
                 throw new Error('Error al dibujar imagen base');
             }
 
             // 2. Cargar y dibujar plantilla
             try {
-                const templateBuffer = await loadImageFromS3(bucketName, Template2.templateKey);
+                const templateBuffer = await loadImageFromS3(bucketName, Template9.templateKey);
                 const templateImage = await loadImage(templateBuffer);
                 this.ctx.drawImage(templateImage, 0, 0, this.width, this.height);
             } catch (error) {
@@ -52,23 +52,23 @@ export default class Template9 extends Template {
             }
 
             // 3. Dibujar textos y elementos
-            this.setupShadow(Template2.DEFAULT_STYLE.shadow);
+            this.setupShadow(Template9.DEFAULT_STYLE.shadow);
             await this.drawBottomBar(0.07);
             await this.drawTitle(title);
             await this.drawText2(requirements);
             await this.drawText3(description);
 
         } catch (error) {
-            console.error('Error en Template2:', error);
+            console.error('Error en Template9:', error);
             throw error;
         }
     }
 
     drawTitle(text) {
         try {
-            this.ctx.font = Template2.DEFAULT_STYLE.titleFont;
-            this.ctx.fillStyle = Template2.DEFAULT_STYLE.titleColor;
-            this.drawTextSection(text, 60, 300, this.width / 2, Template2.DEFAULT_STYLE.titleFont);
+            this.ctx.font = Template9.DEFAULT_STYLE.titleFont;
+            this.ctx.fillStyle = Template9.DEFAULT_STYLE.titleColor;
+            this.drawTextSection(text, 60, 300, this.width / 2, Template9.DEFAULT_STYLE.titleFont);
         } catch (error) {
             throw error;
         }
@@ -76,9 +76,9 @@ export default class Template9 extends Template {
 
     drawText2(text) {
         try {
-            this.ctx.font = Template2.DEFAULT_STYLE.subtitleFont;
-            this.ctx.fillStyle = Template2.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 60, 800, this.width / 2, Template2.DEFAULT_STYLE.subtitleFont);
+            this.ctx.font = Template9.DEFAULT_STYLE.subtitleFont;
+            this.ctx.fillStyle = Template9.DEFAULT_STYLE.subtitleColor;
+            this.drawTextSection(text, 190, 560, this.width / 2, Template9.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
@@ -86,9 +86,9 @@ export default class Template9 extends Template {
 
     drawText3(text) {
         try {
-            this.ctx.font = Template2.DEFAULT_STYLE.subtitleFont;
-            this.ctx.fillStyle = Template2.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 60, 1400, this.width / 2, Template2.DEFAULT_STYLE.subtitleFont);
+            this.ctx.font = Template9.DEFAULT_STYLE.subtitleFont;
+            this.ctx.fillStyle = Template9.DEFAULT_STYLE.subtitleColor;
+            this.drawTextSection(text, 190, 700, this.width / 2, Template9.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
