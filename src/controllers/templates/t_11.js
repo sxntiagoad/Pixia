@@ -3,11 +3,11 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template11 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/template11.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1731094895985.png';
     static templateKey = "templates/template11.png";
     static DEFAULT_STYLE = {
         titleFont: 'bold 130px "Lora", serif',
-        subtitleFont: 'bold 60px "Oswald", sans-serif',
+        subtitleFont: 'bold 34px "Oswald", sans-serif',
         requirementsFont: '20px Arial, sans-serif',
         titleColor: '#000000',
         subtitleColor: '#FFFFFF',
@@ -21,10 +21,10 @@ export default class Template11 extends Template {
         imageType: 'custom',
         backgroundColor: '#000000',
         baseImage: {
-            width: 1200,
-            height: 1200,
-            x: 420,
-            y: -200
+            width: 1900,
+            height: 1400,
+            x: 500,
+            y: 570
         }
     }
 
@@ -74,7 +74,7 @@ export default class Template11 extends Template {
         try {
             this.ctx.font = Template11.DEFAULT_STYLE.titleFont;
             this.ctx.fillStyle = Template11.DEFAULT_STYLE.titleColor;
-            this.drawTextSection(text, 60, 260, this.width / 2, Template11.DEFAULT_STYLE.titleFont);
+            this.drawTextSection(text, 60, 230, this.width, Template11.DEFAULT_STYLE.titleFont);
         } catch (error) {
             throw error;
         }
@@ -84,7 +84,7 @@ export default class Template11 extends Template {
         try {
             this.ctx.font = Template11.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template11.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 80, 660, this.width / 2, Template11.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 170, 1160, this.width *0.5, Template11.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
@@ -94,7 +94,7 @@ export default class Template11 extends Template {
         try {
             this.ctx.font = Template11.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template11.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 80, 840 , this.width , Template11.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 80, 670 , this.width*0.8, Template11.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }

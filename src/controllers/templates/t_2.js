@@ -3,7 +3,7 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template2 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/template13.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1731095555835.png';
     static templateKey = "templates/template13.png";
     static DEFAULT_STYLE = {
         titleFont: 'bold 80px Arial, sans-serif',
@@ -78,7 +78,7 @@ export default class Template2 extends Template {
         try {
             this.ctx.font = Template2.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template2.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 60, 800, this.width / 2, Template2.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 60, 800, this.width *0.8, Template2.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
@@ -88,7 +88,7 @@ export default class Template2 extends Template {
         try {
             this.ctx.font = Template2.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template2.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 60, 1400, this.width / 2, Template2.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 60, 1300, this.width *0.8, Template2.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }

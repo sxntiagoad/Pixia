@@ -3,10 +3,10 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template9 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/template9.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1731094015845.png';
     static templateKey = "templates/template9.png";
     static DEFAULT_STYLE = {
-        titleFont: 'bold 80px "Bodoni Moda", serif',
+        titleFont: 'bold 100px "Bodoni Moda", serif',
         subtitleFont: 'bold 40px "Poppins", sans-serif',
         requirementsFont: '24px Arial, sans-serif',
         titleColor: '#FFFFFF',
@@ -21,10 +21,10 @@ export default class Template9 extends Template {
         imageType: 'custom',
         backgroundColor: '#000000',
         baseImage: {
-            width: 1200,
-            height: 1200,
+            width: 1900,
+            height: 1900,
             x: 420,
-            y: -200
+            y: 0
         }
     }
 
@@ -68,7 +68,7 @@ export default class Template9 extends Template {
         try {
             this.ctx.font = Template9.DEFAULT_STYLE.titleFont;
             this.ctx.fillStyle = Template9.DEFAULT_STYLE.titleColor;
-            this.drawTextSection(text, 60, 300, this.width / 2, Template9.DEFAULT_STYLE.titleFont);
+            this.drawTextSection(text, 60, 550, this.width / 2, Template9.DEFAULT_STYLE.titleFont);
         } catch (error) {
             throw error;
         }
@@ -78,7 +78,7 @@ export default class Template9 extends Template {
         try {
             this.ctx.font = Template9.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template9.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 190, 560, this.width / 2, Template9.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 50, 900, this.width / 1.5, Template9.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
@@ -88,7 +88,7 @@ export default class Template9 extends Template {
         try {
             this.ctx.font = Template9.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template9.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 190, 700, this.width / 2, Template9.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 50, 1360, this.width / 1.5, Template9.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
