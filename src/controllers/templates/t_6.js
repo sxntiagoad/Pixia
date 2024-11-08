@@ -26,7 +26,7 @@ export default class Template6 extends Template {
             width: 2000,
             height: 2000,
             x: 0,
-            y: -500
+            y: -400
         }
     }
 

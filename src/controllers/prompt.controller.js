@@ -88,13 +88,14 @@ const generateVacancyPrompt = async (title, description, requirements) => {
 const generateVacancyTexts = async (title, description, requirements, format) => {
   const textLimits = format === 'STORIES_POST' 
     ? {
+        
         titleLimit: 30,
-        descriptionLimit: 100, 
-        requirementsLimit: 70  
+        descriptionLimit: 200,   
+        requirementsLimit: 200  
       }
     : {
         titleLimit: 30,
-        descriptionLimit: 200,   
+        descriptionLimit: 60, 
         requirementsLimit: 200  
       };
 
@@ -116,8 +117,8 @@ const generateVacancyTexts = async (title, description, requirements, format) =>
         1. Generate these 3 elements:
         ${console.log(textLimits)}
            - An attention-grabbing job title (max ${textLimits.titleLimit} characters)
-           - A brief, engaging description text (max ${textLimits.descriptionLimit} characters)
-           - A concise requirements text (max ${textLimits.requirementsLimit} characters)
+           - A engaging description text (max ${textLimits.descriptionLimit} characters)
+           - A requirements text (max ${textLimits.requirementsLimit} characters)
         2. The texts should be professional but engaging
         3. Use clear, direct language
         4. Focus on the most important aspects
@@ -224,7 +225,7 @@ export const processVacancyTexts = async (req, res) => {
         error: 'Se requieren título, descripción y requisitos originales' 
       });
     }
-
+    console.log('format:', format)
     const generatedTexts = await generateVacancyTexts(
       title,
       description,

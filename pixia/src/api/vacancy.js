@@ -22,12 +22,13 @@ export const createVacancyApi = async (vacancyData) => {
 };
 
 // Generar textos para la vacante
-export const generateVacancyTextsApi = async (vacancyData) => {
+export const generateVacancyTextsApi = async (vacancyData, format) => {
     try {
         const response = await axios.post('/prompts/vacancy-texts', {
             title: vacancyData.title,
             description: vacancyData.description,
-            requirements: vacancyData.requirements
+            requirements: vacancyData.requirements,
+            format: format
         });
         return response.data;
     } catch (error) {

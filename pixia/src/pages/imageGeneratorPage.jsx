@@ -34,7 +34,7 @@ const ImageGeneratorPage = () => {
   const [processedImageUrl, setProcessedImageUrl] = useState('');
   const [images, setImages] = useState([]);
   const [error, setError] = useState('');
-  const [selectedFormat, setSelectedFormat] = useState('LINKEDIN_POST');
+  const [selectedFormat, setSelectedFormat] = useState('NORMAL_POST');
   const [variations, setVariations] = useState([]);
   const [selectedVariation, setSelectedVariation] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -426,9 +426,6 @@ const ImageGeneratorPage = () => {
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4">
                           <p className="text-white text-center text-lg font-medium">
                             {template.id}
-                          </p>
-                          <p className="text-gray-300 text-center text-sm">
-                            {template.format === 'STORIES_POST' ? '9:16' : '1:1'}
                           </p>
                         </div>
                       </div>
