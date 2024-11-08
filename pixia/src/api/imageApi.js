@@ -1,10 +1,11 @@
 import axios from './axios';
 
-export const generateImageApi = async ({ prompt, format }) => {
+export const generateImageApi = async ({ prompt, format, gender }) => {
   try {
     const response = await axios.post('/images/generate-image', { 
       prompt,
-      format 
+      format, 
+      gender
     });
     return response;
   } catch (error) {

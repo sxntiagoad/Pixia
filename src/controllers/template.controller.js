@@ -10,7 +10,6 @@ export const getTemplates = async (req, res) => {
             previewUrl: TemplateClass.previewUrl
         }));
 
-        console.log('Templates disponibles:', templatesWithPreviews);
         res.json({ templates: templatesWithPreviews });
     } catch (error) {
         console.error('Error al obtener templates:', error);

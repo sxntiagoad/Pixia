@@ -17,6 +17,10 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { BsGenderMale, BsGenderFemale } from 'react-icons/bs';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import { isWorkRelatedPrompt } from '../core/wordKeywords';
+import { toast } from 'react-hot-toast';
 
 const ImageGeneratorPage = () => {
   const { logout, user, setUser } = useAuth();
@@ -42,6 +46,7 @@ const ImageGeneratorPage = () => {
   const [vacancies, setVacancies] = useState([]);
   const [isFinalStep, setIsFinalStep] = useState(false);
   const [selectedVacancy, setSelectedVacancy] = useState(null);
+  const [selectedGender, setSelectedGender] = useState("men");
   
   const IMAGE_DIMENSIONS = {
     NORMAL_POST: {
@@ -64,15 +69,35 @@ const ImageGeneratorPage = () => {
 
   const generateImage = async () => {
     if (!prompt.trim()) {
-      setError('Por favor, ingrese un prompt válido.');
+      toast.error('Por favor, ingrese un prompt válido.');
       return;
     }
+
+    if (!isWorkRelatedPrompt(prompt)) {
+      toast.error(
+        'El prompt debe estar relacionado con temas laborales o profesionales. ' +
+        'Por favor, intente con una descripción relacionada con ambientes de trabajo, ' +
+        'roles profesionales o situaciones laborales.',
+        {
+          duration: 5000,
+          position: 'top-center',
+          style: {
+            background: '#fee2e2',
+            color: '#991b1b',
+            maxWidth: '500px'
+          },
+        }
+      );
+      return;
+    }
+
     setError('');
     setIsLoading(true);
     try {
       const response = await generateImageApi({
         prompt,
-        format: selectedFormat
+        format: selectedFormat,
+        gender: selectedGender
       });
 
       if (response.data && response.data.imageUrl) {
@@ -81,7 +106,7 @@ const ImageGeneratorPage = () => {
         throw new Error('No se recibió una imagen válida');
       }
     } catch (error) {
-      setError('Error al generar la imagen. Por favor, intente de nuevo.');
+      toast.error('Error al generar la imagen. Por favor, intente de nuevo.');
     } finally {
       setIsLoading(false);
     }
@@ -95,7 +120,7 @@ const ImageGeneratorPage = () => {
     setError('');
     setIsLoading(true);
     try {
-      console.log('Template seleccionado:', selectedTemplate);
+      ('Template seleccionado:', selectedTemplate);
       
       const overlayText = JSON.stringify({
         title: overlayTitle,
@@ -356,52 +381,54 @@ const ImageGeneratorPage = () => {
                 <option value="STORIES_POST">Story Post</option>
               </select>
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-300 mb-2">Selecciona una Plantilla</label>
+            <div className="mb-6">
               <Swiper
                 modules={[Navigation, Pagination]}
-                spaceBetween={20}
+                spaceBetween={30}
                 slidesPerView={4}
                 navigation
                 pagination={{ clickable: true }}
-                className="template-swiper"
+                className="template-swiper min-h-[300px]"
                 breakpoints={{
-                  // cuando el ancho de ventana es >= 320px
                   320: {
                     slidesPerView: 1,
-                    spaceBetween: 10
-                  },
-                  // cuando el ancho de ventana es >= 480px
-                  480: {
-                    slidesPerView: 2,
-                    spaceBetween: 15
-                  },
-                  // cuando el ancho de ventana es >= 640px
-                  640: {
-                    slidesPerView: 3,
                     spaceBetween: 20
+                  },
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 25
+                  },
+                  1024: {
+                    slidesPerView: 4,
+                    spaceBetween: 30
                   }
                 }}
               >
                 {templates.map(template => (
-                  <SwiperSlide key={template.id}>
+                  <SwiperSlide key={template.id} className="flex items-center justify-center py-4">
                     <div
                       onClick={() => setSelectedTemplate(template.id)}
-                      className={`cursor-pointer rounded-lg overflow-hidden transition-all duration-300 h-48 flex items-center justify-center ${
+                      className={`cursor-pointer rounded-xl overflow-hidden transition-all duration-300 w-full max-w-[250px] shadow-lg ${
                         selectedTemplate === template.id 
-                          ? 'ring-4 ring-indigo-500 transform scale-105' 
+                          ? 'ring-4 ring-indigo-500 transform scale-105 shadow-xl' 
                           : 'hover:ring-2 hover:ring-indigo-400 hover:scale-102'
                       }`}
                     >
-                      <div className="relative w-48 mx-auto">
+                      <div className="relative w-full flex justify-center">
                         <img 
                           src={template.previewUrl} 
                           alt={`Template ${template.id}`}
-                          className="w-full h-auto object-contain max-h-40"
+                          className="w-auto h-auto max-h-[300px] object-contain"
+                          style={{
+                            maxWidth: template.format === 'STORIES_POST' ? '170px' : '250px'
+                          }}
                         />
-                        <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-2">
-                          <p className="text-white text-center text-sm font-medium">
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4">
+                          <p className="text-white text-center text-lg font-medium">
                             {template.id}
+                          </p>
+                          <p className="text-gray-300 text-center text-sm">
+                            {template.format === 'STORIES_POST' ? '9:16' : '1:1'}
                           </p>
                         </div>
                       </div>
@@ -423,45 +450,86 @@ const ImageGeneratorPage = () => {
         return (
           <>
             <h2 className="text-2xl font-bold mb-4 text-gray-200">Paso 2: Generar Imagen</h2>
+            
+            {/* Selector de Género */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-300 mb-3">
+                Seleccionar Género
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => setSelectedGender('men')}
+                  className={`flex items-center justify-center p-4 rounded-lg border-2 transition-all duration-300 ${
+                    selectedGender === 'men'
+                      ? 'border-indigo-500 bg-indigo-500/20 text-white'
+                      : 'border-gray-600 hover:border-indigo-400 text-gray-300 hover:bg-indigo-500/10'
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <BsGenderMale className="w-8 h-8 mb-2" />
+                    <span className="font-medium">Hombre</span>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => setSelectedGender('women')}
+                  className={`flex items-center justify-center p-4 rounded-lg border-2 transition-all duration-300 ${
+                    selectedGender === 'women'
+                      ? 'border-pink-500 bg-pink-500/20 text-white'
+                      : 'border-gray-600 hover:border-pink-400 text-gray-300 hover:bg-pink-500/10'
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <BsGenderFemale className="w-8 h-8 mb-2" />
+                    <span className="font-medium">Mujer</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Input de Prompt */}
             <div className="mb-4">
-              <label htmlFor="prompt" className="block text-sm font-medium text-gray-300 mb-2">Prompt</label>
-              <input
-                type="text"
+              <label htmlFor="prompt" className="block text-sm font-medium text-gray-300 mb-2">
+                Prompt
+              </label>
+              <textarea
                 id="prompt"
                 value={prompt}
                 onChange={handlePromptChange}
-                className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Describe la imagen que quieres generar"
+                className="w-full px-3 py-2 rounded-md border border-gray-600 bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                rows="4"
+                placeholder="Describe la imagen que deseas generar..."
               />
             </div>
+
+            {/* Botón de Generar */}
             <button
               onClick={generateImage}
               disabled={isLoading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300"
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Generando...' : 'Generar Imagen'}
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <AiOutlineLoading3Quarters className="animate-spin -ml-1 mr-3 h-5 w-5" />
+                  <span>Generando...</span>
+                </div>
+              ) : (
+                'Generar Imagen'
+              )}
             </button>
+
+            {/* Preview de la imagen */}
             {imageUrl && (
               <div className="mt-4">
-                <ImagePreview 
-                  imageUrl={imageUrl} 
-                  format={selectedFormat}
-                  isFinalStep={false}
-                />
+                <ImagePreview imageUrl={imageUrl} />
                 <button
                   onClick={() => setStep(3)}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
+                  className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition duration-300"
                 >
                   Siguiente
                 </button>
               </div>
             )}
-            <button
-              onClick={() => setStep(1)}
-              className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded mt-4 transition duration-300"
-            >
-              Anterior
-            </button>
           </>
         );
       case 3:

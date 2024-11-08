@@ -3,7 +3,7 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template5 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/templates/template5.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1731085595266.png';
     static templateKey = "templates/template5.png";  // Key de la plantilla en S3 
     static DEFAULT_STYLE = {
         presetFont: 'bold 30px Arial, sans-serif',
@@ -31,7 +31,7 @@ export default class Template5 extends Template {
             width: 1900,
             height: 1900,
             x: 0,
-            y: -100
+            y: -200
         }
     }
 
@@ -82,7 +82,7 @@ export default class Template5 extends Template {
     drawRequirements(text) {
         this.ctx.font = Template5.DEFAULT_STYLE.subtitleFont;
         this.ctx.fillStyle = Template5.DEFAULT_STYLE.subtitleColor;
-        this.drawTextSection(text, 0, 1300, this.width, Template5.DEFAULT_STYLE.presetFont, Template5.DEFAULT_STYLE.alignment.requirements);
+        this.drawTextSection(text, 0, 1250, this.width, Template5.DEFAULT_STYLE.presetFont, Template5.DEFAULT_STYLE.alignment.requirements);
     }
 
     drawDescription(text) {

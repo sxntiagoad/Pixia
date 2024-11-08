@@ -26,10 +26,10 @@ const IMAGE_FORMATS = {
 };
 
 export const generateImage = async (req, res) => {
-    const { prompt, format = 'NORMAL_POST' } = req.body;
+    const { prompt, format = 'NORMAL_POST', gender="men" } = req.body;
     
     try {
-        const improvedPrompt = await improvePrompt(prompt);
+        const improvedPrompt = await improvePrompt(prompt, gender);
         console.log('Prompt mejorado:', improvedPrompt);
 
         // Obtener dimensiones según el formato
@@ -141,7 +141,7 @@ export const getProcessedImageUrlsByUserId = async (req, res) => {
 
         const images = await Image.find({
             processedImageUrl: { $regex: `processed/${userId}_` }
-        }).select('processedImageUrl');
+        }).select('processedImageUrl').sort({ createdAt: -1 }).lean();
 
         if (images.length === 0) {
             return res.status(404).json({ message: "No images found for the specified user ID" });

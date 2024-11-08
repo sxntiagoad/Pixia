@@ -3,7 +3,8 @@ import { API_KEY } from '../config.js';
 
 const CLAUDE_URL = "https://api.segmind.com/v1/claude-3-haiku";
 
-const improvePrompt = async (userPrompt) => {
+const improvePrompt = async (userPrompt, gender) => {
+  const genderText = gender === "women"? 'La persona debe ser mujer profesional' : 'La persona debe ser hombre profesional';
   const data = {
     model: "claude-3-haiku",
     max_tokens: 300,
@@ -14,6 +15,7 @@ const improvePrompt = async (userPrompt) => {
         content: `Mejora este prompt para generar una imagen: "${userPrompt}"
         
         Reglas:
+        ${genderText}
         LA PERSONA U OBJETO DEBE ESTAR EN EL CENTRO DE LA IMAGEN
         1. El prompt debe estar en inglés y usar términos técnicos fotográficos precisos
         2. Incluye detalles específicos sobre:
@@ -87,13 +89,13 @@ const generateVacancyTexts = async (title, description, requirements, format) =>
   const textLimits = format === 'STORIES_POST' 
     ? {
         titleLimit: 30,
-        descriptionLimit: 100,  // Aumentado para Stories
-        requirementsLimit: 150  // Aumentado para Stories
+        descriptionLimit: 100, 
+        requirementsLimit: 70  
       }
     : {
         titleLimit: 30,
-        descriptionLimit: 50,   // Normal post
-        requirementsLimit: 100  // Normal post
+        descriptionLimit: 200,   
+        requirementsLimit: 200  
       };
 
   const data = {
@@ -110,6 +112,7 @@ const generateVacancyTexts = async (title, description, requirements, format) =>
         Requirements: ${requirements}
 
         Rules:
+        OBLIGATORY: The texts must be in ESPANISH
         1. Generate these 3 elements:
         ${console.log(textLimits)}
            - An attention-grabbing job title (max ${textLimits.titleLimit} characters)
