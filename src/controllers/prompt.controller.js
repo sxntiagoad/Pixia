@@ -12,7 +12,7 @@ const improvePrompt = async (userPrompt) => {
       {
         role: "user",
         content: `Mejora este prompt para generar una imagen: "${userPrompt}"
-
+        
         Reglas:
         LA PERSONA U OBJETO DEBE ESTAR EN EL CENTRO DE LA IMAGEN
         1. El prompt debe estar en inglés y usar términos técnicos fotográficos precisos
