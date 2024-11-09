@@ -72,7 +72,7 @@ const ImageGeneratorPage = () => {
       toast.error('Por favor, ingrese un prompt válido.');
       return;
     }
-
+    
     if (!isWorkRelatedPrompt(prompt)) {
       toast.error(
         'El prompt debe estar relacionado con temas laborales o profesionales. ' +
@@ -250,6 +250,7 @@ const ImageGeneratorPage = () => {
   const handlePromptChange = (e) => {
     setPrompt(e.target.value);
     setError('');
+    toast.dismiss();
   };
 
   const handleOverlayTitleChange = (e) => {
