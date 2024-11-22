@@ -8,6 +8,7 @@ import ImageGeneratorPage from './pages/imageGeneratorPage';
 import VacancyHistoryPage from './pages/PostHistoryPage';
 import PostVacancie from './pages/PostVacancie';
 import ProtectedRoute from './components/ProtectedRoute';
+import TestEditorPage from './pages/TextEditorPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
               <Route path="/post-vacancies" element={<PostVacancie />} />
             </Route>
+            <Route path="/test-editor" element={<TestEditorPage />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

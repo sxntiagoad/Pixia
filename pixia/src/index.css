@@ -61,3 +61,8 @@ style{
   .animate-fade-up {
     animation: fade-up 0.5s ease-out forwards;
   }
+  body {
+    background-color: #111827;
+    margin: 0;
+    padding: 0;
+}
