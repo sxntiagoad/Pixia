@@ -53,7 +53,11 @@ const PostHistoryPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-xl">Cargando imágenes...</div>
+        <div className="relative w-16 h-16">
+          <div className="absolute top-0 left-0 right-0 bottom-0">
+            <div className="w-16 h-16 border-4 border-gray-700 border-t-green-600 rounded-full animate-spin"></div>
+          </div>
+        </div>
       </div>
     );
   }
