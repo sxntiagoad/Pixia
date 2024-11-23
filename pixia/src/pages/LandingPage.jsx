@@ -68,7 +68,11 @@ const LandingPage = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between w-full">
             <div ref={heroContentRef} className="w-full lg:w-1/2 space-y-8 hero-content text-left">
               <div ref={badgeRef} className="inline-block">
-                <img src={PixiaPowerby} alt="Pixia Powered by" className="h-32" />
+                <img 
+                  src={PixiaPowerby} 
+                  alt="Pixia Powered by" 
+                  className="h-40 lg:h-48"
+                />
               </div>
               
               <h1 ref={titleRef} className="text-5xl lg:text-7xl font-bold text-white leading-tight drop-shadow-2xl">
@@ -96,20 +100,38 @@ const LandingPage = () => {
               </div>
             </div>
 
-            <div className="w-full lg:w-1/2 relative h-[600px] lg:h-[700px] mt-16 lg:mt-0">
+            <div className="w-full lg:w-1/2 relative h-[600px] lg:h-[800px] mt-16 lg:mt-0">
               <div className="absolute inset-0 bg-gradient-to-r from-green-400/10 to-emerald-400/10 rounded-3xl blur-3xl" />
               
-              <div ref={mainPhoneRef} className="absolute left-1/2 top-[35%] transform -translate-x-1/2 -translate-y-1/2 z-10 w-[280px] sm:w-[350px] md:w-[450px] lg:w-[500px]">
+              <div 
+                ref={mainPhoneRef} 
+                className="absolute left-[40%] top-[20%] transform -translate-x-1/2 -translate-y-1/2 z-10 w-[300px] sm:w-[380px] md:w-[480px] lg:w-[520px]"
+                style={{ perspective: '1000px' }}
+              >
                 <div className="relative">
                   <div className="absolute -inset-4 bg-gradient-to-r from-green-400/20 to-emerald-400/20 rounded-3xl blur-xl" />
-                  <img src={phoneIcon} alt="Demo Interface" className="relative w-full h-auto drop-shadow-2xl" />
+                  <img 
+                    src={phoneIcon} 
+                    alt="Demo Interface" 
+                    className="relative w-full h-auto drop-shadow-2xl"
+                    style={{ transform: 'rotateY(-5deg)' }}
+                  />
                 </div>
               </div>
               
-              <div ref={secondaryPhoneRef} className="absolute right-0 lg:-right-10 top-[15%] z-20 w-[140px] sm:w-[180px] md:w-[200px] lg:w-[250px]">
+              <div 
+                ref={secondaryPhoneRef} 
+                className="absolute right-[10%] top-[5%] z-20 w-[160px] sm:w-[200px] md:w-[220px] lg:w-[280px]"
+                style={{ perspective: '1000px' }}
+              >
                 <div className="relative">
                   <div className="absolute -inset-4 bg-gradient-to-r from-emerald-400/20 to-green-400/20 rounded-3xl blur-xl" />
-                  <img src={phoneIcon2} alt="Secondary Interface" className="relative w-full h-auto drop-shadow-2xl" />
+                  <img 
+                    src={phoneIcon2} 
+                    alt="Secondary Interface" 
+                    className="relative w-full h-auto drop-shadow-2xl"
+                    style={{ transform: 'rotateY(5deg)' }}
+                  />
                 </div>
               </div>
 
