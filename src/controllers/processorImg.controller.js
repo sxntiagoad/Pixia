@@ -19,7 +19,6 @@ const IMAGE_FORMATS = {
 
 async function generateVariation(variationNumber, imageUrl, texts, templateName, format) {
     const dimensions = IMAGE_FORMATS[format] || IMAGE_FORMATS.NORMAL_POST;
-    console.log(dimensions);
     const { width, height } = dimensions;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
@@ -33,7 +32,6 @@ async function generateVariation(variationNumber, imageUrl, texts, templateName,
         if (!Template) {
             throw new Error(`Template ${templateName} no encontrado`);
         }
-        console.log('Template:', Template);
         
         // Pasar la imagen base al constructor del template
         const template = new Template(ctx, width, height, baseImage);
