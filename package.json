@@ -15,6 +15,7 @@
     "@aws-sdk/lib-storage": "^3.658.0",
     "@aws-sdk/s3-request-presigner": "^3.685.0",
     "@fal-ai/serverless-client": "^0.14.2",
+    "@fontsource/anton": "^5.1.0",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "canvas": "^2.11.2",
