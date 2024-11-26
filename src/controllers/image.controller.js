@@ -131,9 +131,7 @@ export const generateImage = async (req, res) => {
 
 export const getProcessedImageUrlsByUserId = async (req, res) => {
     try {
-        console.log(`userId recibido: ${req.params.userId}`);
         const { userId } = req.params;
-        console.log('userId recibido:', userId);
 
         if (!userId) {
             return res.status(400).json({ message: "User ID is required" });
