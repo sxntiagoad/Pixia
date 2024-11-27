@@ -3,7 +3,7 @@ import { loadImage } from 'canvas';
 import { loadImageFromS3 } from '../../s3config.js';
 
 export default class Template15 extends Template {
-    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1732500438131.png';
+    static previewUrl = 'https://sxntiago-pixia-aws.s3.us-east-2.amazonaws.com/processed/66e3a5bad35c9d9afdc03338_1732670970110.png';
     static templateKey = "templates/template15.png";
     static DEFAULT_STYLE = {
         titleFont: 'bold 55px "Tahoma", Arial, sans-serif',
@@ -22,10 +22,10 @@ export default class Template15 extends Template {
         imageType: 'custom',
         backgroundColor: '#000000',
         baseImage: {
-            width: 800,
-            height: 800,
-            x: 350,
-            y: 100
+            width: 750,
+            height: 750,
+            x: 490,
+            y: 200
         }
     }
 
@@ -81,7 +81,7 @@ export default class Template15 extends Template {
         try {
             this.ctx.font = Template15.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template15.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 20, 700, this.width/2, Template15.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 20, 640, this.width/2, Template15.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
@@ -92,7 +92,7 @@ export default class Template15 extends Template {
         try {
             this.ctx.font = Template15.DEFAULT_STYLE.subtitleFont;
             this.ctx.fillStyle = Template15.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 20, 520 , this.width/2, Template15.DEFAULT_STYLE.subtitleFont);
+            this.drawTextSection(text, 20, 490 , this.width/2, Template15.DEFAULT_STYLE.subtitleFont);
         } catch (error) {
             throw error;
         }
