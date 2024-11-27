@@ -71,7 +71,7 @@ export default class Template15 extends Template {
         try {
             this.ctx.font = Template15.DEFAULT_STYLE.titleFont;
             this.ctx.fillStyle = Template15.DEFAULT_STYLE.subtitleColor;
-            this.drawTextSection(text, 20, 380, this.width*0.8, Template15.DEFAULT_STYLE.titleFont, 'center');
+            this.drawTextSection(text, 20, 360, this.width*0.7, Template15.DEFAULT_STYLE.titleFont);
         } catch (error) {
             throw error;
         }

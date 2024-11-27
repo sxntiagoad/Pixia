@@ -96,7 +96,7 @@ const generateVacancyTexts = async (title, description, requirements, format) =>
     : {
         titleLimit: 30,
         descriptionLimit: 60, 
-        requirementsLimit: 180  
+        requirementsLimit: 200  
       };
 
   const data = {
@@ -117,7 +117,7 @@ const generateVacancyTexts = async (title, description, requirements, format) =>
         1. Generate these 3 elements:
            - An attention-grabbing job title (max ${textLimits.titleLimit} characters)
            - A engaging description text (max ${textLimits.descriptionLimit} characters)
-           - A requirements text (max ${textLimits.requirementsLimit} characters)
+           - A requirements text (max ${textLimits.requirementsLimit} characters FOCUS ON TRY TO MENTION THE LIST OF MOST IMPORTANT REQUIREMENTS)
         2. The texts should be professional but engaging
         3. Use clear, direct language
         4. Focus on the most important aspects
