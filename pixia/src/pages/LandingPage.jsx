@@ -150,12 +150,12 @@ const LandingPage = () => {
                 <p className="text-gray-300">Nuestra IA de última generación analiza tendencias del mercado laboral y optimiza tus descripciones de puestos para atraer a los mejores candidatos.</p>
               </div>
               <div className="feature-card bg-gray-800/50 p-6 rounded-xl backdrop-blur-lg">
-                <h3 className="text-2xl font-semibold text-green-400 mb-4">Personalización</h3>
-                <p className="text-gray-300">Adapta las vacantes a tu cultura empresarial y requisitos específicos. Nuestra plataforma aprende de tus preferencias para mejorar con cada uso.</p>
+                <h3 className="text-2xl font-semibold text-green-400 mb-4">Automatización Inteligente</h3>
+                <p className="text-gray-300">Optimiza el tiempo de publicación automatizando procesos clave, desde la generación de textos hasta el diseño visual. Reduce drásticamente los tiempos de creación de publicaciones, permitiendo enfocarte en lo que realmente importa.</p>
               </div>
               <div className="feature-card bg-gray-800/50 p-6 rounded-xl backdrop-blur-lg">
-                <h3 className="text-2xl font-semibold text-green-400 mb-4">Análisis de Datos</h3>
-                <p className="text-gray-300">Obtén insights valiosos sobre el rendimiento de tus anuncios de empleo y optimiza tu estrategia de reclutamiento con nuestros informes detallados.</p>
+                <h3 className="text-2xl font-semibold text-green-400 mb-4">Impacto Visual Atractivo</h3>
+                <p className="text-gray-300">Genera publicaciones con calidad profesional utilizando plantillas modernas y personalizables. Cada anuncio está diseñado para destacar entre la competencia y captar la atención de los mejores candidatos.</p>
               </div>
             </div>
           </div>
