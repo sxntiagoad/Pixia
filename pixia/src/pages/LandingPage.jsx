@@ -84,7 +84,7 @@ const LandingPage = () => {
               </h1>
               
               <p ref={descriptionRef} className="text-xl text-gray-200 drop-shadow-lg">
-                Utiliza el poder de la inteligencia artificial para crear vacantes que atraigan al mejor talento.
+                Cuando la tecnología trabaja contigo, el éxito está al alcance de un clic.
               </p>
               
               <div ref={ctaButtonRef} className="flex justify-start">
@@ -164,7 +164,7 @@ const LandingPage = () => {
         <section ref={el => sectionRefs.current[1] = el} className="py-24">
           <div className="container mx-auto px-4">
             <h2 className="text-4xl font-bold text-white mb-16 text-center">
-              Crea vacantes en <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">4 simples pasos</span>
+              Crea vacantes en <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">3 simples pasos</span>
             </h2>
             
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
