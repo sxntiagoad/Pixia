@@ -15,6 +15,8 @@ const PixiaMagic = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [generatedTexts, setGeneratedTexts] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -45,35 +47,41 @@ const PixiaMagic = () => {
     };
 
     const handleGeneratePost = async () => {
-        if (!selectedVacancy || !selectedTemplate) {
+        if (!selectedVacancy || !selectedTemplate || isLoading) {
             return;
         }
 
         try {
-            // Verificar que selectedVacancy tenga los datos necesarios
-            if (!selectedVacancy.title) {
-                console.error('La vacante seleccionada no tiene título:', selectedVacancy);
-                return;
-            }
+            setIsLoading(true);
+            setProgress(0);
 
             const format = 'NORMAL_POST';
             const format_img='STORIES_POST';
             
-            // 1. Generar textos para la vacante
+            setProgress(10);
             const { generatedTexts } = await generateVacancyTextsApi(selectedVacancy, format);
+            setProgress(25);
+            
+            setProgress(37);
 
-            // 2. Generar el prompt usando los textos generados
+            // 2. Generar prompt (50%)
             const { prompt: generatedPrompt } = await generateVacancyPromptApi(generatedTexts);
+            setProgress(50);
 
-            // 3. Generar imagen usando el prompt generado
+            setProgress(65);
+
+            
+            // 3. Generar imagen (75%)
             const imageResponse = await generateImageApi({
                 prompt: generatedPrompt,
                 format: format_img
             });
-            console.log('Respuesta de imagen:', imageResponse);
+            setProgress(75);
 
+            // 4. Remover fondo (100%)
             const generatedImageUrl = imageResponse.data.imageUrl;
             const removedBgImage = await removeBackground(generatedImageUrl);
+            setProgress(100);
 
             setGeneratedTexts({
                 ...generatedTexts,
@@ -84,6 +92,9 @@ const PixiaMagic = () => {
 
         } catch (error) {
             console.error('Error al generar el post:', error);
+        } finally {
+            setIsLoading(false);
+            setProgress(0);
         }
     };
 
@@ -210,16 +221,41 @@ const PixiaMagic = () => {
                     </Swiper>
                 </div>
 
-                {/* Botón para generar */}
-                <div className="mt-6">
+                {/* Botón para generar con barra de progreso */}
+                <div className="relative">
                     <button
                         onClick={handleGeneratePost}
-                        className={`px-6 py-2 rounded-lg text-white transition-colors duration-300 
-                            ${selectedVacancy && selectedTemplate ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 cursor-not-allowed'}`}
-                        disabled={!selectedVacancy || !selectedTemplate}
+                        disabled={!selectedVacancy || !selectedTemplate || isLoading}
+                        className={`w-full px-6 py-2 rounded-lg text-white transition-colors duration-300 
+                            ${isLoading 
+                                ? 'bg-gray-600 cursor-not-allowed' 
+                                : selectedVacancy && selectedTemplate 
+                                    ? 'bg-green-600 hover:bg-green-700' 
+                                    : 'bg-gray-600 cursor-not-allowed'}`}
                     >
-                        Generar Post Automático
+                        {isLoading ? 'Generando...' : 'Generar Post Automático'}
                     </button>
+
+                    {/* Barra de progreso */}
+                    {isLoading && (
+                        <div className="mt-4">
+                            <div className="w-full bg-gray-700 rounded-full h-2.5">
+                                <div 
+                                    className="bg-green-600 h-2.5 rounded-full transition-all duration-300"
+                                    style={{ width: `${progress}%` }}
+                                ></div>
+                            </div>
+                            <div className="text-center text-sm text-gray-400 mt-2">
+                                {progress}% Completado
+                            </div>
+                            <div className="text-center text-xs text-gray-500 mt-1">
+                                {progress <= 25 ? 'Generando textos...' :
+                                 progress <= 50 ? 'Creando prompt...' :
+                                 progress <= 75 ? 'Generando imagen...' :
+                                 'Procesando imagen...'}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
