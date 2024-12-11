@@ -9,6 +9,7 @@ import VacancyHistoryPage from './pages/PostHistoryPage';
 import PostVacancie from './pages/PostVacancie';
 import ProtectedRoute from './components/ProtectedRoute';
 import TestEditorPage from './pages/TextEditorPage';
+import PixiaMagic from './pages/PixiaMagic';
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/" element={<LandingPage />} />
             <Route path="/historial-vacantes" element={<VacancyHistoryPage />} />
-            
+            <Route path="/magic-pixia" element={<PixiaMagic />} />
+
             <Route element={<ProtectedRoute />}>
               <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
               <Route path="/post-vacancies" element={<PostVacancie />} />

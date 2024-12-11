@@ -17,6 +17,14 @@ export const getTemplates = async (req, res) => {
     }
 };
 
+export const getImageTemplate = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        
+    }
+};
+
 export const processWithTemplate = async (req, res) => {
     try {
         console.log('Procesando imagen con template...');

@@ -55,7 +55,28 @@ const loadImageFromS3 = async (bucketName, key) => {
     throw new Error(`Error al cargar la imagen desde S3: ${error.message}`);
   }
 };
+export const listImagesInFolder = async () => {
+    const params = {
+        Bucket: 'sxntiago-pixia-aws',
+        Prefix: 'png_templates/',
+    };
 
+    try {
+        const command = new ListObjectsV2Command(params);
+        const data = await s3Client.send(command);
+        
+        // Filtrar y mapear directamente a un array de URLs
+        const imageUrls = data.Contents
+            .filter(item => item.Key.endsWith('.jpg') || item.Key.endsWith('.png') || item.Key.endsWith('.jpeg'))
+            .map(item => `https://${params.Bucket}.s3.${AWS_BUCKET_REGION}.amazonaws.com/${item.Key}`);
+
+        console.log('URLs de imágenes encontradas:', imageUrls);
+        return imageUrls;
+    } catch (error) {
+        console.error('Error al listar imágenes en S3:', error);
+        throw new Error(`Error al listar imágenes: ${error.message}`);
+    }
+};
 export const listObjectsFromS3 = async() => {
   const params = {
     Bucket: AWS_BUCKET_NAME,

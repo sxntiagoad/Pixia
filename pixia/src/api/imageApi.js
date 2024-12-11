@@ -23,6 +23,15 @@ export const getProcessedImageUrlsByUserId = async (userId) => {
   }
 };
 
+export const removeBackground = async (image) => {
+  try {
+    const response = await axios.post('/images/remove-bg', { image });
+    return response.data.result;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const processImageApi = (imageUrl, overlayText, prompt, templateName, format) => {
   return axios.post('/images/process-image', { 
     imageUrl, 

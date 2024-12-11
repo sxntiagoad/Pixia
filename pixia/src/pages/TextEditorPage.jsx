@@ -4,6 +4,8 @@ import Navbar from '../components/Navbar';
 import { FaUpload } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import VacancySelector from '../components/VacancySelector';
+
 
 const fadeIn = {
   initial: { opacity: 0 },
@@ -19,10 +21,45 @@ const slideUp = {
   transition: { duration: 0.7, ease: "easeInOut" }
 };
 
-const TextEditorPage = () => {
+const generateAutomaticPost = async () => {
+    
+}
+export const TextEditorPage = () => {
+    const [mode, setMode] = useState('manual');
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedContent, setGeneratedContent] = useState(null);
+    const [vacancyData, setVacancyData] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [editedData, setEditedData] = useState(null);
     const [isImageLoaded, setIsImageLoaded] = useState(false);
+    const [selectedVacancy, setSelectedVacancy] = useState(null);
+
+    const generateAutomaticPost = async () => {
+        setIsGenerating(true);
+        try {
+            if (!selectedVacancy) {
+                throw new Error('Por favor selecciona una vacante');
+            }
+
+            const { title, description, requirements } = selectedVacancy;
+
+            // Aquí puedes usar title, description y requirements para generar el post
+            const generatedTexts = {
+                title,
+                text1: description,
+                text2: requirements
+            };
+
+            // Lógica para generar el post automático usando generatedTexts
+            console.log('Generando post automático con:', generatedTexts);
+            // Aquí puedes llamar a la función que maneja la generación del post
+
+        } catch (error) {
+            console.error('Error al generar el post automático:', error);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
 
     // Manejar la subida de imagen
     const handleImageUpload = (event) => {
@@ -201,6 +238,10 @@ const TextEditorPage = () => {
                     </AnimatePresence>
                 </motion.div>
             </motion.div>
+            <VacancySelector onSelect={setSelectedVacancy} />
+            <button onClick={generateAutomaticPost} disabled={isGenerating}>
+                {isGenerating ? 'Generando...' : 'Generar Post Automático'}
+            </button>
         </motion.div>
     );
 };
