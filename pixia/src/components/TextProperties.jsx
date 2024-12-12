@@ -27,8 +27,23 @@ const TextProperties = ({ canvas, onChange }) => {
         fontStyle: 'normal',
         textDecoration: 'none',
         fill: '#FFFFFFFF',
-        lineHeight: 1.2
+        lineHeight: 1.2,
+        angle: 0,
+        opacity: 1,
+        scaleX: 1,
+        scaleY: 1
     });
+
+    const getNumericValue = (value) => {
+        if (value === undefined || value === null) return '0.00';
+        return Number(value).toFixed(2);
+    };
+
+    const fontSize = getNumericValue(textProps.fontSize);
+    const angle = getNumericValue(textProps.angle);
+    const opacity = getNumericValue(textProps.opacity * 100);
+    const scaleX = getNumericValue(textProps.scaleX);
+    const scaleY = getNumericValue(textProps.scaleY);
 
     useEffect(() => {
         if (canvas) {
@@ -94,7 +109,7 @@ const TextProperties = ({ canvas, onChange }) => {
                 <input
                     type="number"
                     className="w-[70px] border border-gray-700 bg-transparent outline-none px-2 rounded-md"
-                    value={textProps.fontSize}
+                    value={fontSize}
                     onChange={(e) => handlePropertyChange('fontSize', parseInt(e.target.value))}
                     min="1"
                     max="200"

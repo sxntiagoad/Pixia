@@ -30,6 +30,10 @@ const ImageEdit = ({ imageUrl, overlayImage, initialTexts, onSave }) => {
     const handleSelectionCleared = useCallback(() => {
         setCurrentComponent(null);
         setSelectItem(null);
+        if (fabricRef.current) {
+            fabricRef.current.discardActiveObject();
+            fabricRef.current.renderAll();
+        }
     }, []);
 
     // Inicialización del canvas
@@ -424,10 +428,13 @@ const ImageEdit = ({ imageUrl, overlayImage, initialTexts, onSave }) => {
                     </div>
 
                     {/* Panel de propiedades */}
-                    {currentComponent && currentComponent.name === 'text' && (
+                    {currentComponent && 
+                     currentComponent.name === 'text' && 
+                     fabricRef.current?.getActiveObject() && (
                         <div className="bg-gray-800 p-4 rounded-lg">
                             <TextProperties 
                                 canvas={fabricRef.current}
+                                activeObject={fabricRef.current.getActiveObject()}
                                 onChange={saveState}
                             />
                         </div>
