@@ -134,9 +134,6 @@ const LandingPage = () => {
                   />
                 </div>
               </div>
-
-              <div className="absolute -right-4 -bottom-4 w-64 h-64 bg-green-400/20 rounded-full blur-3xl" />
-              <div className="absolute -left-8 -top-8 w-48 h-48 bg-emerald-400/20 rounded-full blur-3xl" />
             </div>
           </div>
         </section>

@@ -23,9 +23,9 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/" element={<LandingPage />} />
             <Route path="/historial-vacantes" element={<VacancyHistoryPage />} />
-            <Route path="/magic-pixia" element={<PixiaMagic />} />
 
             <Route element={<ProtectedRoute />}>
+            <Route path="/magic-pixia" element={<PixiaMagic />} />
               <Route path="/ImageGeneratorPage" element={<ImageGeneratorPage />} />
               <Route path="/post-vacancies" element={<PostVacancie />} />
             </Route>

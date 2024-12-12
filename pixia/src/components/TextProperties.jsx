@@ -1,12 +1,33 @@
 import React, { useState, useEffect } from 'react';
 
+const AVAILABLE_FONTS = [
+    'Arial',
+    'Roboto',
+    'Montserrat',
+    'Poppins',
+    'Playfair Display',
+    'Oswald',
+    'Dancing Script',
+    'Pacifico',
+    'Bebas Neue',
+    'Raleway',
+    'Quicksand',
+    'Comfortaa',
+    'Righteous',
+    'Permanent Marker',
+    'Satisfy'
+];
+
 const TextProperties = ({ canvas, onChange }) => {
     const [textProps, setTextProps] = useState({
-        fontFamily: 'Arial',
         fontSize: 20,
-        color: '#000000',
-        weight: 400,
-        padding: 5
+        fontFamily: 'Arial',
+        textAlign: 'left',
+        fontWeight: 'normal',
+        fontStyle: 'normal',
+        textDecoration: 'none',
+        fill: '#FFFFFFFF',
+        lineHeight: 1.2
     });
 
     useEffect(() => {
@@ -15,11 +36,13 @@ const TextProperties = ({ canvas, onChange }) => {
                 const activeObject = canvas.getActiveObject();
                 if (activeObject && activeObject.type === 'textbox') {
                     setTextProps({
-                        fontFamily: activeObject.fontFamily,
                         fontSize: activeObject.fontSize,
-                        color: activeObject.fill,
-                        weight: activeObject.fontWeight,
-                        padding: activeObject.padding
+                        fontFamily: activeObject.fontFamily,
+                        textAlign: activeObject.textAlign,
+                        fontWeight: activeObject.fontWeight,
+                        fontStyle: activeObject.fontStyle,
+                        textDecoration: activeObject.textDecoration,
+                        fill: activeObject.fill
                     });
                 }
             };
@@ -34,28 +57,35 @@ const TextProperties = ({ canvas, onChange }) => {
         }
     }, [canvas]);
 
-    const updateProperty = (property, value) => {
-        const activeObject = canvas?.getActiveObject();
+    const handlePropertyChange = (property, value) => {
+        const activeObject = canvas.getActiveObject();
         if (activeObject && activeObject.type === 'textbox') {
             activeObject.set(property, value);
             canvas.renderAll();
-            onChange?.();
             setTextProps(prev => ({ ...prev, [property]: value }));
+            if (onChange) onChange();
         }
     };
 
     return (
-        <div className="flex flex-col gap-4">
-            <div className="flex gap-1 items-center">
-                <span className="text-md w-[70px]">Font : </span>
+        <div className="space-y-4">
+            <div className="space-y-2">
+                <label className="text-white text-sm">Fuente</label>
                 <select
-                    className="w-[120px] border border-gray-700 bg-transparent outline-none px-2 rounded-md"
                     value={textProps.fontFamily}
-                    onChange={(e) => updateProperty('fontFamily', e.target.value)}
+                    onChange={(e) => handlePropertyChange('fontFamily', e.target.value)}
+                    className="w-full p-2 bg-gray-700 text-white rounded-lg"
+                    style={{ fontFamily: textProps.fontFamily }}
                 >
-                    <option value="Arial">Arial</option>
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Courier New">Courier New</option>
+                    {AVAILABLE_FONTS.map(font => (
+                        <option 
+                            key={font} 
+                            value={font}
+                            style={{ fontFamily: font }}
+                        >
+                            {font}
+                        </option>
+                    ))}
                 </select>
             </div>
 
@@ -65,7 +95,7 @@ const TextProperties = ({ canvas, onChange }) => {
                     type="number"
                     className="w-[70px] border border-gray-700 bg-transparent outline-none px-2 rounded-md"
                     value={textProps.fontSize}
-                    onChange={(e) => updateProperty('fontSize', parseInt(e.target.value))}
+                    onChange={(e) => handlePropertyChange('fontSize', parseInt(e.target.value))}
                     min="1"
                     max="200"
                 />
@@ -76,8 +106,8 @@ const TextProperties = ({ canvas, onChange }) => {
                 <input
                     type="number"
                     className="w-[70px] border border-gray-700 bg-transparent outline-none px-2 rounded-md"
-                    value={textProps.weight}
-                    onChange={(e) => updateProperty('fontWeight', parseInt(e.target.value))}
+                    value={textProps.fontWeight}
+                    onChange={(e) => handlePropertyChange('fontWeight', parseInt(e.target.value))}
                     step="100"
                     min="100"
                     max="900"
@@ -89,9 +119,27 @@ const TextProperties = ({ canvas, onChange }) => {
                 <input
                     type="color"
                     className="w-[70px] h-[30px] border border-gray-700 bg-transparent outline-none rounded-md"
-                    value={textProps.color}
-                    onChange={(e) => updateProperty('fill', e.target.value)}
+                    value={textProps.fill}
+                    onChange={(e) => handlePropertyChange('fill', e.target.value)}
                 />
+            </div>
+
+            <div className="space-y-2">
+                <label className="text-white text-sm">Interlineado</label>
+                <input
+                    type="range"
+                    min="0.5"
+                    max="3"
+                    step="0.1"
+                    value={textProps.lineHeight}
+                    onChange={(e) => handlePropertyChange('lineHeight', parseFloat(e.target.value))}
+                    className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-400">
+                    <span>0.5</span>
+                    <span>{textProps.lineHeight.toFixed(1)}</span>
+                    <span>3.0</span>
+                </div>
             </div>
         </div>
     );

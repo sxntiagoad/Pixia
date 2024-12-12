@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import pixiaLogo from '../assets/pixia.png';
 import { motion } from 'framer-motion';
-import { FaHome, FaImage, FaHistory, FaBriefcase, FaPencilAlt, FaSignOutAlt } from 'react-icons/fa';
+import { FaHome, FaImage, FaHistory, FaBriefcase, FaPencilAlt, FaSignOutAlt, FaMagic } from 'react-icons/fa';
 
 const Navbar = () => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -21,7 +21,8 @@ const Navbar = () => {
     { path: '/ImageGeneratorPage', icon: <FaImage className="text-xl" />, label: 'Crear Post' },
     { path: '/historial-vacantes', icon: <FaHistory className="text-xl" />, label: 'Post Generados' },
     { path: '/post-vacancies', icon: <FaBriefcase className="text-xl" />, label: 'Crear Vacante' },
-    { path: '/test-editor', icon: <FaPencilAlt className="text-xl" />, label: 'Editor' }
+    { path: '/test-editor', icon: <FaPencilAlt className="text-xl" />, label: 'Editor' },
+    { path: '/magic-pixia', icon: <FaMagic className="text-xl" />, label: 'Magic Pixia' }
   ];
 
   return (

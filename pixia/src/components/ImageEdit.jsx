@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { fabric } from 'fabric-pure-browser';
-import { FaFont, FaTrash, FaSave, FaLayerGroup, FaArrowUp, FaArrowDown, FaImage } from 'react-icons/fa';
+import { FaFont, FaTrash, FaSave, FaLayerGroup, FaArrowUp, FaArrowDown, FaImage, FaRedo } from 'react-icons/fa';
 import TextProperties from './TextProperties';
 
-const ImageEdit = ({ imageUrl, onSave }) => {
+const ImageEdit = ({ imageUrl, overlayImage, initialTexts, onSave }) => {
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
     const [currentComponent, setCurrentComponent] = useState(null);
     const [selectItem, setSelectItem] = useState(null);
     const [layers, setLayers] = useState([]);
+
+    const generateUniqueId = (prefix) => `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     // Manejadores de selección
     const handleSelection = useCallback((e) => {
@@ -43,17 +45,16 @@ const ImageEdit = ({ imageUrl, onSave }) => {
             snapThreshold: 10
         });
 
+        // Cargar imagen de fondo (template)
         if (imageUrl) {
             fabric.Image.fromURL(imageUrl, (img) => {
-                // Calcular el factor de escala para ajustar la imagen
-                const maxSize = 600; // Tamaño máximo deseado
+                const maxSize = 600;
                 const scale = Math.min(
                     maxSize / img.width,
                     maxSize / img.height,
-                    1 // No ampliar imágenes pequeñas
+                    1
                 );
                 
-                // Establecer las nuevas dimensiones del canvas
                 const newWidth = img.width * scale;
                 const newHeight = img.height * scale;
                 
@@ -62,7 +63,6 @@ const ImageEdit = ({ imageUrl, onSave }) => {
                     height: newHeight
                 });
                 
-                // Escalar y posicionar la imagen
                 img.scale(scale);
                 img.set({
                     left: 0,
@@ -72,8 +72,37 @@ const ImageEdit = ({ imageUrl, onSave }) => {
                 });
                 
                 fabricRef.current.add(img);
-                fabricRef.current.renderAll();
-                saveState();
+
+                // Cargar imagen superpuesta (sin fondo)
+                if (overlayImage) {
+                    fabric.Image.fromURL(overlayImage, (overlayImg) => {
+                        overlayImg.scale(scale);
+                        overlayImg.set({
+                            left: 0,
+                            top: 0,
+                            id: 'overlay-image'
+                        });
+                        fabricRef.current.add(overlayImg);
+                        
+                        // Añadir textos iniciales
+                        if (initialTexts) {
+                            initialTexts.forEach(textData => {
+                                const text = new fabric.Textbox(textData.text, {
+                                    left: textData.left,
+                                    top: textData.top,
+                                    fontSize: textData.fontSize,
+                                    fill: '#000000',
+                                    fontFamily: 'Arial',
+                                    id: textData.id
+                                });
+                                fabricRef.current.add(text);
+                            });
+                        }
+                        
+                        fabricRef.current.renderAll();
+                        saveState();
+                    });
+                }
             });
         }
 
@@ -102,7 +131,7 @@ const ImageEdit = ({ imageUrl, onSave }) => {
                 fabricRef.current = null;
             }
         };
-    }, [imageUrl, handleSelection, handleSelectionCleared]);
+    }, [imageUrl, overlayImage, initialTexts, handleSelection, handleSelectionCleared]);
 
     // Guardar estado
     const saveState = useCallback(() => {
@@ -113,7 +142,7 @@ const ImageEdit = ({ imageUrl, onSave }) => {
             .filter(obj => obj.id !== 'background-image')
             .reverse()
             .map(obj => ({
-                id: obj.id || Date.now(),
+                id: obj.id || generateUniqueId(obj.type),
                 name: obj.type === 'textbox' ? 'Texto' : 'Imagen',
                 type: obj.type
             }))
@@ -127,7 +156,7 @@ const ImageEdit = ({ imageUrl, onSave }) => {
             .filter(obj => obj.id !== 'background-image')
             .reverse()
             .map(obj => ({
-                id: obj.id || Date.now(),
+                id: obj.id || generateUniqueId(obj.type),
                 name: obj.type === 'textbox' ? 'Texto' : 'Imagen',
                 type: obj.type
             }))
@@ -160,7 +189,22 @@ const ImageEdit = ({ imageUrl, onSave }) => {
             fontSize: 20,
             fill: '#000000',
             fontFamily: 'Arial',
-            id: Date.now()
+            id: generateUniqueId('text')
+        });
+        fabricRef.current.add(text);
+        fabricRef.current.setActiveObject(text);
+        fabricRef.current.renderAll();
+        saveState();
+    };
+
+    const addText1 = (preText) => {
+        const text = new fabric.Textbox(preText, {
+            left: 0,
+            top: 0,
+            fontSize: 20,
+            fill: '#000000',
+            fontFamily: 'Arial',
+            id: generateUniqueId('text1')
         });
         fabricRef.current.add(text);
         fabricRef.current.setActiveObject(text);
@@ -180,15 +224,29 @@ const ImageEdit = ({ imageUrl, onSave }) => {
 
     const handleSave = () => {
         if (fabricRef.current) {
+            // Obtener el canvas actual
+            const canvas = fabricRef.current;
+            
+            // Crear un canvas temporal con fondo blanco
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const ctx = tempCanvas.getContext('2d');
+            
+            // Dibujar fondo blanco
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
             // Convertir el canvas a una URL de datos
-            const dataURL = fabricRef.current.toDataURL({
+            const dataURL = canvas.toDataURL({
                 format: 'png',
-                quality: 1
+                quality: 1,
+                multiplier: 2 // Para mejor calidad
             });
             
             // Crear un elemento <a> temporal para la descarga
             const link = document.createElement('a');
-            link.download = `pixia-edit-${Date.now()}.png`; // Nombre del archivo
+            link.download = `pixia-edit-${Date.now()}.png`;
             link.href = dataURL;
             
             // Simular clic para iniciar la descarga
@@ -198,7 +256,7 @@ const ImageEdit = ({ imageUrl, onSave }) => {
             
             // Si existe onSave, también llamamos a la función original
             if (onSave) {
-                onSave(fabricRef.current.toJSON());
+                onSave(canvas.toJSON());
             }
         }
     };
@@ -222,7 +280,7 @@ const ImageEdit = ({ imageUrl, onSave }) => {
                     img.set({
                         left: 50,
                         top: 50,
-                        id: Date.now()
+                        id: generateUniqueId('image')
                     });
                     
                     fabricRef.current.add(img);
@@ -235,10 +293,68 @@ const ImageEdit = ({ imageUrl, onSave }) => {
         }
     };
 
+    // Añadir función de recarga
+    const handleReload = () => {
+        if (!fabricRef.current) return;
+        
+        // Limpiar el canvas manteniendo solo la imagen de fondo
+        const objects = fabricRef.current.getObjects();
+        objects.forEach(obj => {
+            if (obj.id !== 'background-image') {
+                fabricRef.current.remove(obj);
+            }
+        });
+
+        // Recargar la imagen superpuesta
+        if (overlayImage) {
+            fabric.Image.fromURL(overlayImage, (overlayImg) => {
+                const maxSize = 600;
+                const scale = Math.min(
+                    maxSize / overlayImg.width,
+                    maxSize / overlayImg.height,
+                    1
+                );
+                
+                overlayImg.scale(scale);
+                overlayImg.set({
+                    left: 0,
+                    top: 0,
+                    id: 'overlay-image'
+                });
+                fabricRef.current.add(overlayImg);
+                
+                // Recargar textos iniciales
+                if (initialTexts) {
+                    initialTexts.forEach(textData => {
+                        const text = new fabric.Textbox(textData.text, {
+                            left: textData.left,
+                            top: textData.top,
+                            fontSize: textData.fontSize,
+                            fill: '#000000',
+                            fontFamily: 'Arial',
+                            id: textData.id
+                        });
+                        fabricRef.current.add(text);
+                    });
+                }
+                
+                fabricRef.current.renderAll();
+                saveState();
+            });
+        }
+    };
+
     return (
         <div className="flex flex-col gap-4">
             {/* Toolbar */}
             <div className="bg-gray-800 p-4 rounded-lg flex flex-wrap gap-4">
+                <button
+                    onClick={handleReload}
+                    className="flex items-center gap-2 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded-lg text-white"
+                    title="Recargar"
+                >
+                    <FaRedo /> Recargar
+                </button>
                 <button
                     onClick={addText}
                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white"
