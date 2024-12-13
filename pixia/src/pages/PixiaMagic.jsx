@@ -6,6 +6,7 @@ import { FaCheckCircle, FaCaretDown } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import ImageEdit from '../components/ImageEdit';
 import Navbar from '../components/Navbar';
+import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/swiper-bundle.css';
 
 const PixiaMagic = () => {
@@ -225,6 +226,7 @@ const PixiaMagic = () => {
                                 </h2>
                                 <div className="relative">
                                     <Swiper
+                                        modules={[Navigation, Pagination]}
                                         spaceBetween={20}
                                         slidesPerView={3}
                                         navigation
